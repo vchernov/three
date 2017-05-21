@@ -1,0 +1,10 @@
+[Dd]ebug/
+[Rr]elease/
+.vs/
+*.sdf
+*.db
+*.opendb
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
