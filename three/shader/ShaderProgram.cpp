@@ -81,6 +81,11 @@ void ShaderProgram::setUniform(int location, int value) {
 }
 
 template<>
+void ShaderProgram::setUniform(int location, glm::vec3 value) {
+    glUniform3fv(location, 1, glm::value_ptr(value));
+}
+
+template<>
 void ShaderProgram::setUniform(int location, glm::mat4 value) {
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
