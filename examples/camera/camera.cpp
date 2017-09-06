@@ -13,7 +13,6 @@
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/Shape.h"
-#include "../../helpers/engine/Time.h"
 
 using namespace three;
 
@@ -89,6 +88,7 @@ int main(int argc, char** argv) {
 
     controls->setRotationSpeed(0.5f);
     controls->setZoomSpeed(0.2f);
+    controls->setMoveSpeed(0.005f);
     controls->setRadius(3.0f);
 
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());

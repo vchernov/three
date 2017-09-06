@@ -1,5 +1,4 @@
 #include "OrbitWindow.h"
-#include <iostream>
 
 OrbitWindow::OrbitWindow(const std::string& title, int width, int height,
     std::shared_ptr<three::OrbitControls> controls)
@@ -24,15 +23,15 @@ void OrbitWindow::handleMouseButton(int button, int action, int mods) {
 
 void OrbitWindow::handleCursorPosition(double xpos, double ypos) {
     glm::dvec2 cursorPos(xpos, ypos);
-    glm::dvec2 offset = cursorPos - lastCursorPos;
+    glm::dvec2 translation = cursorPos - lastCursorPos;
 
     if (dragButton == GLFW_MOUSE_BUTTON_LEFT) {
-        controls->pitch((float)offset.x);
-        controls->yaw((float)offset.y);
+        controls->pitch((float)translation.x);
+        controls->yaw((float)translation.y);
     }
 
     if (dragButton == GLFW_MOUSE_BUTTON_RIGHT) {
-
+        controls->move(translation);
     }
 
     lastCursorPos = cursorPos;
