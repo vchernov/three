@@ -22,8 +22,17 @@ public:
     int getWidth() const override;
     int getHeight() const override;
 
+protected:
+    virtual void handleKey(int key, int scancode, int action, int mods);
+    virtual void handleMouseButton(int button, int action, int mods);
+    virtual void handleCursorPosition(double xpos, double ypos);
+    virtual void handleScroll(double xoffset, double yoffset);
+
 private:
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+    static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+    static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
     int width;
     int height;

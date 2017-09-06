@@ -8,6 +8,7 @@
 
 #include "../../three/shader/ShaderProgram.h"
 #include "../../three/mesh/Mesh.h"
+#include "../../three/camera/OrthographicCamera.h"
 
 #include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/Vertex.h"
@@ -46,7 +47,8 @@ int main(int argc, char** argv) {
         imgFn = argv[1];
     }
 
-    auto wnd = WindowFactory::createApp("Texturing Example", 1024, 768);
+    auto wnd = WindowFactory::createWindow("Texturing Example", 1024, 768);
+    auto camera = std::make_unique<OrthographicCamera>(wnd->getWidth(), wnd->getHeight(), 0.1f, 10.0f);
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
@@ -65,7 +67,7 @@ int main(int argc, char** argv) {
 
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::modelMatrix), transform);
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::viewMatrix), glm::mat4());
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), glm::ortho(0.0f, (float)wnd->getWidth(), 0.0f, (float)wnd->getHeight(), 0.1f, 10.0f));
+    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
 
     while (wnd->isRunning()) {
         wnd->processEvents();

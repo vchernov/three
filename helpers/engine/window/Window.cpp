@@ -32,7 +32,11 @@ Window::Window(const std::string& title, int width, int height)
     }
     glGetError(); // GLEW has a long-existing bug where calling glewInit() always sets the GL_INVALID_ENUM error flag
 
+    glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, &Window::keyCallback);
+    glfwSetMouseButtonCallback(window, &Window::mouseButtonCallback);
+    glfwSetCursorPosCallback(window, &Window::cursorPositionCallback);
+    glfwSetScrollCallback(window, &Window::scrollCallback);
 
     glViewport(0, 0, width, height);
 
@@ -71,8 +75,37 @@ int Window::getHeight() const {
     return height;
 }
 
-void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+void Window::handleKey(int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+}
+
+void Window::handleMouseButton(int button, int action, int mods) {
+}
+
+void Window::handleScroll(double xoffset, double yoffset) {
+}
+
+void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    app->handleKey(key, scancode, action, mods);
+}
+
+void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    app->handleMouseButton(button, action, mods);
+}
+
+void Window::handleCursorPosition(double xpos, double ypos) {
+}
+
+void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    app->handleScroll(xoffset, yoffset);
+}
+
+void Window::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+    Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    app->handleCursorPosition(xpos, ypos);
 }
