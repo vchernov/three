@@ -30,7 +30,7 @@ void OrbitWindow::handleCursorPosition(double xpos, double ypos) {
         controls->yaw((float)translation.y);
     }
 
-    if (dragButton == GLFW_MOUSE_BUTTON_RIGHT) {
+    if (dragButton == GLFW_MOUSE_BUTTON_RIGHT || dragButton == GLFW_MOUSE_BUTTON_MIDDLE) {
         controls->move(translation);
     }
 

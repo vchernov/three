@@ -95,7 +95,7 @@ GeometryBuffer Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 p
     return geometry;
 }
 
-GeometryBuffer Shape::createCube() { //TODO: fix
+GeometryBuffer Shape::createCube() {
     GeometryBuffer geometry;
     geometry.primitiveType = GL_TRIANGLES;
 
@@ -108,13 +108,13 @@ GeometryBuffer Shape::createCube() { //TODO: fix
     geometry.vertexBuffers.emplace_back(std::move(pointsBuffer));
 
     geometry.indexBuffer.bind();
-    geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles);
+    geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);
 
     par_shapes_free_mesh(mesh);
     return geometry;
 }
 
-GeometryBuffer Shape::createSphere(int slices, int stacks) { //TODO: fix
+GeometryBuffer Shape::createSphere(int slices, int stacks) {
     GeometryBuffer geometry;
     geometry.primitiveType = GL_TRIANGLES;
 
@@ -133,7 +133,7 @@ GeometryBuffer Shape::createSphere(int slices, int stacks) { //TODO: fix
     geometry.vertexBuffers.emplace_back(std::move(texCoordsBuffer));
 
     geometry.indexBuffer.bind();
-    geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles);
+    geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);
 
     par_shapes_free_mesh(mesh);
     return geometry;

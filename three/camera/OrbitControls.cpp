@@ -26,11 +26,7 @@ void OrbitControls::yaw(float angle) {
     const auto rotMin = -glm::pi<float>() * 0.5f;
     const auto rotMax = glm::pi<float>() * 0.5f;
 
-    if (rotation.x < rotMin) {
-        rotation.x = rotMin;
-    } else if (rotation.x > rotMax) {
-        rotation.x = rotMax;
-    }
+    rotation.x = glm::clamp(rotation.x, rotMin, rotMax);
 }
 
 void OrbitControls::pitch(float angle) {

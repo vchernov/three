@@ -17,7 +17,11 @@
 using namespace three;
 
 struct Model {
-    Mesh* mesh;
+    explicit Model(Mesh mesh)
+        : mesh(std::move(mesh)) {
+    }
+
+    Mesh mesh;
     ModelTransform transform;
     glm::vec3 color;
 };
@@ -31,12 +35,14 @@ int main(int argc, char** argv) {
     controls->setZoomSpeed(0.2f);
     controls->setMoveSpeed(0.005f);
     controls->setRadius(3.0f);
-    auto wnd = WindowFactory::createWindowWithOrbitCamera("Camera Example", 1024, 768, controls);
+    controls->yaw(45.0f);
+    auto wnd = WindowFactory::createWindowWithOrbitCamera("Primitives Example", 1024, 768, controls);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     auto shaderProg = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
     shaderProg.use();
@@ -44,51 +50,34 @@ int main(int argc, char** argv) {
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
 
-    auto primitiveGeo = Shape::createTriangle();
-    auto primitiveMesh = Mesh::create(primitiveGeo.vertexBuffers, std::move(primitiveGeo.indexBuffer), shaderProg, primitiveGeo.primitiveType);
-
-    auto gridGeo = Shape::createGrid(glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f), 8, 8);
-    auto gridMesh = Mesh::create(gridGeo.vertexBuffers, std::move(gridGeo.indexBuffer), shaderProg, gridGeo.primitiveType);
-
     std::vector<Model> models;
-
+    
     {
-        Model model;
-        model.mesh = &primitiveMesh;
-        model.transform.position.z = 0.001f;
-        model.color = glm::vec3(1.0f, 1.0f, 0.0f);
-        models.push_back(model);
-    }
-
-    {
-        Model model;
-        model.mesh = &primitiveMesh;
-        model.color = glm::vec3(0.0f, 0.0f, 1.0f);
-        model.transform.position.x = 0.25f;
-        model.transform.position.y = 0.25f;
-        model.transform.position.z = 0.002f;
-        model.transform.scale = glm::vec3(0.5f);
-        model.transform.eulerAngles.z = 180.0f;
-        models.push_back(model);
-    }
-
-    {
-        Model model;
-        model.mesh = &primitiveMesh;
-        model.color = glm::vec3(0.0f, 1.0f, 0.0f);
-        model.transform.position.x = -0.5f;
-        model.transform.position.y = -0.25f;
-        model.transform.position.z = 0.003f;
-        model.transform.scale = glm::vec3(0.25f);
-        model.transform.eulerAngles.z = -45.0f;
-        models.push_back(model);
-    }
-
-    {
-        Model model;
-        model.mesh = &gridMesh;
+        auto geo = Shape::createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8);
+        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
+        Model model(std::move(mesh));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
-        models.push_back(model);
+        models.push_back(std::move(model));
+    }
+
+    {
+        auto geo = Shape::createCube();
+        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
+        Model model(std::move(mesh));
+        model.color = glm::vec3(1.0f, 1.0f, 0.0f);
+        model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
+        model.transform.position = glm::vec3(0.5f, 0.0f, -0.25f);
+        models.push_back(std::move(model));
+    }
+
+    {
+        auto geo = Shape::createSphere(32, 32);
+        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
+        Model model(std::move(mesh));
+        model.color = glm::vec3(0.0f, 1.0f, 0.0f);
+        model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
+        model.transform.position = glm::vec3(-0.25f, 0.25f, 0.25f);
+        models.push_back(std::move(model));
     }
 
     while (wnd->isRunning()) {
@@ -101,7 +90,7 @@ int main(int argc, char** argv) {
         for (const auto& model : models) {
             shaderProg.setUniform(shaderProg.getUniformLocation("color"), model.color);
             shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
-            model.mesh->draw();
+            model.mesh.draw();
         }
 
         wnd->swapBuffers();
