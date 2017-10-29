@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BufferObject.h"
+#include "../BufferObject.h"
 
 namespace three {
 

@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "UniformBuffer.h"
 
 namespace three {
 
@@ -68,6 +69,15 @@ int ShaderProgram::getAttributeLocation(const std::string& name) const {
 
 int ShaderProgram::getUniformLocation(const std::string& name) const {
     return glGetUniformLocation(program, name.c_str());
+}
+
+int ShaderProgram::getUniformBlockIndex(const std::string& name) const {
+    return glGetUniformBlockIndex(program, name.c_str());
+}
+
+void ShaderProgram::bindUniformBlock(const std::string& name, const UniformBuffer& buffer) {
+    int blockIndex = getUniformBlockIndex(name);
+    glUniformBlockBinding(program, blockIndex, buffer.blockId);
 }
 
 template<>

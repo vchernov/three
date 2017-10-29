@@ -7,6 +7,7 @@
 namespace three {
 
 class Shader;
+class UniformBuffer;
 
 class ShaderProgram {
 public:
@@ -32,6 +33,10 @@ public:
     int getAttributeLocation(const std::string& name) const;
 
     int getUniformLocation(const std::string& name) const;
+
+    int getUniformBlockIndex(const std::string& name) const;
+
+    void bindUniformBlock(const std::string& name, const UniformBuffer& buffer);
 
     template<class T>
     void setUniform(int location, T value);

@@ -3,7 +3,7 @@
 #include <vector>
 #include <list>
 
-#include "BufferObject.h"
+#include "../BufferObject.h"
 #include "VertexAttribute.h"
 #include "../shader/ShaderProgram.h"
 

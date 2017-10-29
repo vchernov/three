@@ -40,9 +40,21 @@ public:
     }
 
 protected:
-    void static upload(const void* data, size_t length, unsigned int usage) {
+    void static upload(const void* data, int length, unsigned int usage) {
         glBufferData(target, length, data, usage);
         assert(glGetError() == GL_NO_ERROR);
+    }
+
+    void bindBlock(unsigned int blockId) const {
+        glBindBufferBase(target, blockId, buffer);
+    }
+
+    static void* mapRange(int offset, int length, unsigned int access) {
+        return glMapBufferRange(target, offset, length, access);
+    }
+
+    static void unmap() {
+        glUnmapBuffer(target);
     }
 
 private:

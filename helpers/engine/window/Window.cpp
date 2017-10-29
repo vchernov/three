@@ -47,6 +47,14 @@ Window::Window(const std::string& title, int width, int height)
 
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
+
+    GLint maxUniformBlockSize;
+    glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
+    std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE = " << maxUniformBlockSize << std::endl;
+
+    GLint maxUniformBufferBindings;
+    glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
+    std::cout << "GL_MAX_UNIFORM_BUFFER_BINDINGS = " << maxUniformBufferBindings << std::endl;
 }
 
 Window::~Window() {
