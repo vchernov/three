@@ -62,11 +62,11 @@ int main(int argc, char** argv) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glm::mat4 transform;
+    glm::mat4 transform(1.0f);
     transform = glm::translate(transform, glm::vec3(wnd->getWidth() * 0.5f, wnd->getHeight() * 0.5f, -1.0f));
 
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::modelMatrix), transform);
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::viewMatrix), glm::mat4());
+    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::viewMatrix), glm::mat4(1.0f));
     shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
 
     while (wnd->isRunning()) {
