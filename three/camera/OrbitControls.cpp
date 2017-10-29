@@ -12,8 +12,8 @@ glm::mat4 OrbitControls::getViewMatrix() const {
     glm::vec3 offset = glm::euclidean(rotation) * radius;
 
     glm::vec3 forward = -offset;
-    glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), forward);
-    glm::vec3 up = glm::cross(forward, right);
+    glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 up = glm::cross(right, forward);
 
     glm::vec3 eye = center + offset;
 
@@ -21,15 +21,14 @@ glm::mat4 OrbitControls::getViewMatrix() const {
 }
 
 glm::vec3 OrbitControls::getEyePosition() const {
-    glm::vec3 offset = glm::euclidean(rotation) * radius;
-    return center + offset;
+    return center + glm::euclidean(rotation) * radius;
 }
 
 void OrbitControls::yaw(float angle) {
     rotation.x += glm::radians(angle) * rotationSpeed;
 
-    const auto rotMin = -glm::pi<float>() * 0.5f;
-    const auto rotMax = glm::pi<float>() * 0.5f;
+    const auto rotMin = -glm::half_pi<float>() + glm::epsilon<float>();
+    const auto rotMax = glm::half_pi<float>() - glm::epsilon<float>();
 
     rotation.x = glm::clamp(rotation.x, rotMin, rotMax);
 }
@@ -45,15 +44,15 @@ void OrbitControls::zoom(float amount) {
     }
 }
 
-void OrbitControls::move(glm::vec2 translation) {
+void OrbitControls::move(float x, float y) {
     glm::vec3 offset = glm::euclidean(rotation) * radius;
 
     glm::vec3 forward = -offset;
-    glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), forward);
-    glm::vec3 up = glm::cross(forward, right);
+    glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 up = glm::cross(right, forward);
 
-    center += glm::normalize(right) * translation.x * moveSpeed;
-    center += glm::normalize(up) * translation.y * moveSpeed;
+    center += glm::normalize(right) * x * moveSpeed;
+    center += glm::normalize(up) * y * moveSpeed;
 }
 
 void OrbitControls::setRotationSpeed(float rotationSpeed) {

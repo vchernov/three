@@ -15,7 +15,7 @@ public:
     void pitch(float angle);
     void zoom(float amount);
 
-    void move(glm::vec2 translation);
+    void move(float x, float y);
 
     void setRotationSpeed(float rotationSpeed);
     void setZoomSpeed(float zoomSpeed);
