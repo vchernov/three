@@ -4,8 +4,16 @@
 #include "Face3.h"
 #include "../../three/TypeInfo.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/normal.hpp>
+
+#pragma warning(push)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4305)
+#pragma warning(disable: 4838)
 #define PAR_SHAPES_IMPLEMENTATION
 #include "par_shapes.h"
+#pragma warning(pop)
 
 using namespace three;
 
@@ -83,11 +91,11 @@ GeometryBuffer Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 p
         indices.push_back(rows * 2 + j * 2 + 1);
     }
 
-    VertexBuffer pointsBuffer;
-    pointsBuffer.bind();
-    pointsBuffer.upload(vertices);
-    pointsBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointsBuffer));
+    VertexBuffer pointBuffer;
+    pointBuffer.bind();
+    pointBuffer.upload(vertices);
+    pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
+    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(indices.data(), TypeInfo<unsigned short>::dataType, sizeof(unsigned short), indices.size());
@@ -101,11 +109,19 @@ GeometryBuffer Shape::createCube() {
 
     par_shapes_mesh* mesh = par_shapes_create_cube();
 
-    VertexBuffer pointsBuffer;
-    pointsBuffer.bind();
-    pointsBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
-    pointsBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointsBuffer));
+    VertexBuffer pointBuffer;
+    pointBuffer.bind();
+    pointBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
+    pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
+    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
+
+    par_shapes_compute_normals(mesh);
+
+    VertexBuffer normalBuffer;
+    normalBuffer.bind();
+    normalBuffer.upload(mesh->normals, mesh->npoints, sizeof(float) * 3);
+    normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
+    geometry.vertexBuffers.emplace_back(std::move(normalBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);
@@ -120,17 +136,23 @@ GeometryBuffer Shape::createSphere(int slices, int stacks) {
 
     par_shapes_mesh* mesh = par_shapes_create_parametric_sphere(slices, stacks);
 
-    VertexBuffer pointsBuffer;
-    pointsBuffer.bind();
-    pointsBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
-    pointsBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointsBuffer));
+    VertexBuffer pointBuffer;
+    pointBuffer.bind();
+    pointBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
+    pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
+    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
 
-    VertexBuffer texCoordsBuffer;
-    texCoordsBuffer.bind();
-    texCoordsBuffer.upload(mesh->tcoords, mesh->npoints, sizeof(float) * 2);
-    pointsBuffer.addAttribute({AttributeName::texCoord, TypeInfo<float>::dataType, 2, 0});
-    geometry.vertexBuffers.emplace_back(std::move(texCoordsBuffer));
+    VertexBuffer texCoordBuffer;
+    texCoordBuffer.bind();
+    texCoordBuffer.upload(mesh->tcoords, mesh->npoints, sizeof(float) * 2);
+    texCoordBuffer.addAttribute({AttributeName::texCoord, TypeInfo<float>::dataType, 2, 0});
+    geometry.vertexBuffers.emplace_back(std::move(texCoordBuffer));
+
+    VertexBuffer normalBuffer;
+    normalBuffer.bind();
+    normalBuffer.upload(mesh->normals, mesh->npoints, sizeof(float) * 3);
+    normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
+    geometry.vertexBuffers.emplace_back(std::move(normalBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);

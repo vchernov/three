@@ -9,6 +9,7 @@ public:
     virtual ~OrbitControls() = default;
 
     glm::mat4 getViewMatrix() const;
+    glm::vec3 getEyePosition() const;
 
     void yaw(float angle);
     void pitch(float angle);

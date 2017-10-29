@@ -45,6 +45,13 @@ void VertexBuffer::addAttribute(VertexAttribute attribute) {
 void VertexBuffer::enableAttributes(const ShaderProgram& shaderProg) const {
     for (const auto& attrib : attributes) {
         auto location = shaderProg.getAttributeLocation(attrib.name);
+        //*
+        if (location < 0) {
+            continue;
+        }
+        /*/
+        assert(location >= 0);
+        //*/
         glVertexAttribPointer(location, attrib.size, attrib.dataType, attrib.normalize ? GL_TRUE : GL_FALSE, stride, (GLvoid*)attrib.offset);
         assert(glGetError() == GL_NO_ERROR);
         glEnableVertexAttribArray(location);

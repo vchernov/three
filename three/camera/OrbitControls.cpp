@@ -20,6 +20,11 @@ glm::mat4 OrbitControls::getViewMatrix() const {
     return glm::lookAt(eye, center, up);
 }
 
+glm::vec3 OrbitControls::getEyePosition() const {
+    glm::vec3 offset = glm::euclidean(rotation) * radius;
+    return center + offset;
+}
+
 void OrbitControls::yaw(float angle) {
     rotation.x += glm::radians(angle) * rotationSpeed;
 
