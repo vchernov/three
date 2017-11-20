@@ -24,6 +24,8 @@ public:
     void setRadius(float radius);
     void setMinRadius(float minRadius);
 
+    void setPosition(const glm::vec3& position);
+
 private:
     float rotationSpeed = 1.0f;
     float zoomSpeed = 1.0f;

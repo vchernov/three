@@ -142,17 +142,17 @@ GeometryBuffer Shape::createSphere(int slices, int stacks) {
     pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
     geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
 
-    VertexBuffer texCoordBuffer;
-    texCoordBuffer.bind();
-    texCoordBuffer.upload(mesh->tcoords, mesh->npoints, sizeof(float) * 2);
-    texCoordBuffer.addAttribute({AttributeName::texCoord, TypeInfo<float>::dataType, 2, 0});
-    geometry.vertexBuffers.emplace_back(std::move(texCoordBuffer));
-
     VertexBuffer normalBuffer;
     normalBuffer.bind();
     normalBuffer.upload(mesh->normals, mesh->npoints, sizeof(float) * 3);
     normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
     geometry.vertexBuffers.emplace_back(std::move(normalBuffer));
+
+    VertexBuffer texCoordBuffer;
+    texCoordBuffer.bind();
+    texCoordBuffer.upload(mesh->tcoords, mesh->npoints, sizeof(float) * 2);
+    texCoordBuffer.addAttribute({AttributeName::texCoord, TypeInfo<float>::dataType, 2, 0});
+    geometry.vertexBuffers.emplace_back(std::move(texCoordBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);

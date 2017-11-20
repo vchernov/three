@@ -10,6 +10,9 @@ public:
 
     UniformBuffer();
 
+    UniformBuffer(UniformBuffer&& other) noexcept;
+    UniformBuffer& operator=(UniformBuffer&& other) noexcept;
+
     void bindBlock();
 
     void allocate(int size);

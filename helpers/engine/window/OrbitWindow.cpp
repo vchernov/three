@@ -22,12 +22,12 @@ void OrbitWindow::handleMouseButton(int button, int action, int mods) {
 }
 
 void OrbitWindow::handleCursorPosition(double xpos, double ypos) {
-    glm::dvec2 cursorPos(xpos, ypos);
-    glm::dvec2 translation = cursorPos - lastCursorPos;
+    glm::vec2 cursorPos((float)xpos, (float)ypos);
+    glm::vec2 translation = cursorPos - lastCursorPos;
 
     if (dragButton == GLFW_MOUSE_BUTTON_LEFT) {
-        controls->pitch((float)translation.x);
-        controls->yaw((float)translation.y);
+        controls->pitch(translation.x);
+        controls->yaw(translation.y);
     }
 
     if (dragButton == GLFW_MOUSE_BUTTON_RIGHT || dragButton == GLFW_MOUSE_BUTTON_MIDDLE) {

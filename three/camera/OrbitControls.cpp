@@ -75,4 +75,8 @@ void OrbitControls::setMinRadius(float minRadius) {
     this->minRadius = minRadius;
 }
 
+void OrbitControls::setPosition(const glm::vec3& position) {
+    center = position;
+}
+
 }

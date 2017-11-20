@@ -21,5 +21,5 @@ private:
 
     std::shared_ptr<three::OrbitControls> controls;
     int dragButton = invalidButton;
-    glm::dvec2 lastCursorPos;
+    glm::vec2 lastCursorPos;
 };
