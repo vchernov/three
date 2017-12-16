@@ -1,5 +1,7 @@
 #include "Shape.h"
 
+#include <array>
+
 #include "AttributeName.h"
 #include "Face3.h"
 #include "../../three/TypeInfo.h"
@@ -34,10 +36,63 @@ GeometryBuffer Shape::createTriangle() {
     pointsBuffer.bind();
     pointsBuffer.upload(vertices);
     pointsBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointsBuffer));
+    geometry.vertexBuffers.push_back(std::move(pointsBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(faces.data(), TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size());
+
+    return geometry;
+}
+
+GeometryBuffer Shape::createCube() {
+    GeometryBuffer geometry;
+    geometry.primitiveType = GL_TRIANGLES;
+
+    auto v1 = glm::vec3(-0.5f, -0.5f, 0.5f);
+    auto v2 = glm::vec3(0.5f, -0.5f, 0.5f);
+    auto v3 = glm::vec3(0.5f, 0.5f, 0.5f);
+    auto v4 = glm::vec3(-0.5f, 0.5f, 0.5f);
+
+    auto v5 = glm::vec3(-0.5f, -0.5f, -0.5f);
+    auto v6 = glm::vec3(0.5f, -0.5f, -0.5f);
+    auto v7 = glm::vec3(0.5f, 0.5f, -0.5f);
+    auto v8 = glm::vec3(-0.5f, 0.5f, -0.5f);
+
+    auto n1 = glm::vec3(0.0f, 0.0f, 1.0f);
+    auto n2 = glm::vec3(1.0f, 0.0f, 0.0f);
+    auto n3 = glm::vec3(0.0f, 0.0f, -1.0f);
+    auto n4 = glm::vec3(-1.0f, 0.0f, 0.0f);
+    auto n5 = glm::vec3(0.0f, 1.0f, 0.0f);
+    auto n6 = glm::vec3(0.0f, -1.0f, 0.0f);
+
+    const int vertexCount = 24;
+    std::array<glm::vec3, vertexCount * 2> vertices = {
+        v1, n1, v2, n1, v3, n1, v4, n1,
+        v2, n2, v6, n2, v7, n2, v3, n2,
+        v6, n3, v5, n3, v8, n3, v7, n3,
+        v5, n4, v1, n4, v4, n4, v8, n4,
+        v4, n5, v3, n5, v7, n5, v8, n5,
+        v5, n6, v6, n6, v2, n6, v1, n6
+    };
+
+    std::array<unsigned char, 36> indices = {
+        0, 1, 2, 0, 2, 3,
+        4, 5, 6, 4, 6, 7,
+        8, 9, 10, 8, 10, 11,
+        12, 13, 14, 12, 14, 15,
+        16, 17, 18, 16, 18, 19,
+        20, 21, 22, 20, 22, 23
+    };
+
+    VertexBuffer buffer;
+    buffer.bind();
+    buffer.upload(vertices.data(), vertexCount, sizeof(glm::vec3) + sizeof(glm::vec3));
+    buffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, glm::vec3::length(), 0});
+    buffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, glm::vec3::length(), sizeof(glm::vec3)});
+    geometry.vertexBuffers.push_back(std::move(buffer));
+
+    geometry.indexBuffer.bind();
+    geometry.indexBuffer.upload(indices.data(), TypeInfo<unsigned char>::dataType, sizeof(unsigned char), indices.size());
 
     return geometry;
 }
@@ -95,7 +150,7 @@ GeometryBuffer Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 p
     pointBuffer.bind();
     pointBuffer.upload(vertices);
     pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
+    geometry.vertexBuffers.push_back(std::move(pointBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(indices.data(), TypeInfo<unsigned short>::dataType, sizeof(unsigned short), indices.size());
@@ -103,7 +158,7 @@ GeometryBuffer Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 p
     return geometry;
 }
 
-GeometryBuffer Shape::createCube() {
+GeometryBuffer Shape::generateCube() {
     GeometryBuffer geometry;
     geometry.primitiveType = GL_TRIANGLES;
 
@@ -113,7 +168,7 @@ GeometryBuffer Shape::createCube() {
     pointBuffer.bind();
     pointBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
     pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
+    geometry.vertexBuffers.push_back(std::move(pointBuffer));
 
     par_shapes_compute_normals(mesh);
 
@@ -121,7 +176,7 @@ GeometryBuffer Shape::createCube() {
     normalBuffer.bind();
     normalBuffer.upload(mesh->normals, mesh->npoints, sizeof(float) * 3);
     normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(normalBuffer));
+    geometry.vertexBuffers.push_back(std::move(normalBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);
@@ -140,19 +195,19 @@ GeometryBuffer Shape::createSphere(int slices, int stacks) {
     pointBuffer.bind();
     pointBuffer.upload(mesh->points, mesh->npoints, sizeof(float) * 3);
     pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(pointBuffer));
+    geometry.vertexBuffers.push_back(std::move(pointBuffer));
 
     VertexBuffer normalBuffer;
     normalBuffer.bind();
     normalBuffer.upload(mesh->normals, mesh->npoints, sizeof(float) * 3);
     normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
-    geometry.vertexBuffers.emplace_back(std::move(normalBuffer));
+    geometry.vertexBuffers.push_back(std::move(normalBuffer));
 
     VertexBuffer texCoordBuffer;
     texCoordBuffer.bind();
     texCoordBuffer.upload(mesh->tcoords, mesh->npoints, sizeof(float) * 2);
     texCoordBuffer.addAttribute({AttributeName::texCoord, TypeInfo<float>::dataType, 2, 0});
-    geometry.vertexBuffers.emplace_back(std::move(texCoordBuffer));
+    geometry.vertexBuffers.push_back(std::move(texCoordBuffer));
 
     geometry.indexBuffer.bind();
     geometry.indexBuffer.upload(mesh->triangles, TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3);

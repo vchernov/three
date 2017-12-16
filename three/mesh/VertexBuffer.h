@@ -32,6 +32,11 @@ public:
         upload(container.data(), container.size(), sizeof(T), usage);
     }
 
+    template<typename T, size_t size>
+    void upload(const std::array<T, size>& container, unsigned int usage = GL_STATIC_DRAW) {
+        upload(container.data(), container.size(), sizeof(T), usage);
+    }
+
     template<typename T>
     void addAttribute(std::string name, int offset);
 
