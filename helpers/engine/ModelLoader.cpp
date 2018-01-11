@@ -8,31 +8,39 @@
 
 #include "../../three/TypeInfo.h"
 
-#include "AttributeName.h"
+#include "AttributeSemantic.h"
 
 using namespace three;
 
-GeometryBuffer loadMesh(const aiMesh* mesh) {
+Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBindings) {
     assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
 
-    GeometryBuffer geometry;
-    geometry.primitiveType = GL_TRIANGLES;
+    std::vector<VertexAttribute> attributes;
+    VertexBuffer vertexBuffer;
+    vertexBuffer.bind();
 
-    if (mesh->HasPositions()) {
-        VertexBuffer pointBuffer;
-        pointBuffer.bind();
-        //pointBuffer.allocate(mesh->mVertices, mesh->mNumVertices, sizeof(aiVector3D));
-        //pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-        //geometry.vertexBuffers.push_back(std::move(pointBuffer));
+    int positionsLength = mesh->mNumVertices * sizeof(aiVector3D);
+    int normalsLength = 0;
+    if (mesh->HasNormals()) {
+        normalsLength = mesh->mNumVertices * sizeof(aiVector3D);
+    }
+    VertexBuffer::allocate(positionsLength + normalsLength);
+
+    VertexBuffer::upload(0, positionsLength, mesh->mVertices);
+    if (locationBindings->hasAttribute(AttributeSemantic::position)) {
+        attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(aiVector3D)));
     }
 
     if (mesh->HasNormals()) {
-        VertexBuffer normalBuffer;
-        normalBuffer.bind();
-        //normalBuffer.allocate(mesh->mNormals, mesh->mNumVertices, sizeof(aiVector3D));
-        //normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
+        VertexBuffer::upload(positionsLength, normalsLength, mesh->mNormals);
+        if (locationBindings->hasAttribute(AttributeSemantic::normal)) {
+            attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(aiVector3D)));
+        }
     }
 
+    VertexBuffer::unbind();
+
+    IndexBuffer indexBuffer;
     if (mesh->HasFaces()) {
         std::vector<unsigned int> indices;
 
@@ -43,11 +51,12 @@ GeometryBuffer loadMesh(const aiMesh* mesh) {
             }
         }
 
-        geometry.indexBuffer.bind();
-        geometry.indexBuffer.allocate(TypeInfo<unsigned int>::dataType, sizeof(unsigned int), indices.size(), indices.data());
+        indexBuffer.bind();
+        indexBuffer.allocate(TypeInfo<unsigned int>::dataType, sizeof(unsigned int), indices.size(), indices.data());
+        IndexBuffer::unbind();
     }
 
-    return geometry;
+    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_TRIANGLES);
 }
 
 void extendBounds(const aiMesh* mesh, glm::vec3& lower, glm::vec3& upper) {
@@ -62,7 +71,7 @@ void extendBounds(const aiMesh* mesh, glm::vec3& lower, glm::vec3& upper) {
     }
 }
 
-std::list<GeometryBuffer> ModelLoader::load(const std::string& fn, BoundingBox& bounds) {
+std::vector<Mesh> ModelLoader::load(const std::string& fn, const IAttributeLocationBindings* locationBindings, BoundingBox& bounds) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(fn.c_str(), aiProcess_Triangulate);
     if (scene == nullptr) {
@@ -70,19 +79,18 @@ std::list<GeometryBuffer> ModelLoader::load(const std::string& fn, BoundingBox& 
         throw std::runtime_error(importer.GetErrorString());
     }
 
-    std::list<GeometryBuffer> geos;
-
     glm::vec3 lower = glm::vec3(std::numeric_limits<float>::max());
     glm::vec3 upper = glm::vec3(-std::numeric_limits<float>::max());
 
+    std::vector<Mesh> meshes;
     for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
         const aiMesh* mesh = scene->mMeshes[i];
-        geos.push_back(loadMesh(mesh));
+        meshes.push_back(loadMesh(mesh, locationBindings));
         extendBounds(mesh, lower, upper);
     }
 
     bounds.size = upper - lower;
     bounds.center = lower + bounds.size * 0.5f;
 
-    return geos;
+    return meshes;
 }

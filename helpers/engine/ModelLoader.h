@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
-#include <list>
+#include <vector>
 
-#include "GeometryBuffer.h"
+#include "../../three/mesh/Mesh.h"
+
+#include "IAttributeLocationBindings.h"
 #include "BoundingBox.h"
 
 class ModelLoader {
 public:
-    static std::list<GeometryBuffer> load(const std::string& fn, BoundingBox& bounds);
+    static std::vector<three::Mesh> load(const std::string& fn, const IAttributeLocationBindings* locationBindings, BoundingBox& bounds);
 };

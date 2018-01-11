@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "../../three/shader/ShaderProgram.h"
+#include "../../three/shader/Uniform.h"
 #include "../../three/shader/UniformBuffer.h"
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/PerspectiveCamera.h"
@@ -16,15 +17,13 @@
 #include "../../helpers/engine/ModelLoader.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/Model.h"
+#include "../../helpers/engine/AttributeLocationBindings.h"
 
 using namespace three;
 
-Model loadModel(const std::string& fn, const ShaderProgram& shaderProg) {
+Model loadModel(const std::string& fn, const ShaderProgram& shaderProg, const IAttributeLocationBindings* locationBindings) {
     Model model;
-    std::list<GeometryBuffer> geos = ModelLoader::load(fn, model.bounds);
-    for (auto& geo : geos) {
-        //model.meshes.push_back(Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType));
-    }
+    model.meshes = ModelLoader::load(fn, locationBindings, model.bounds);
     return model;
 }
 
@@ -49,27 +48,34 @@ int main(int argc, char** argv) {
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    auto modelShaderProg = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
-    modelShaderProg.use();
+    auto program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
+    program.use();
+
+    AttributeLocationBindings locationBindings;
+    locationBindings.addAttributes(&program);
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 100.0f);
-    //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
+    Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
     assert(glGetError() == GL_NO_ERROR);
 
-    auto model = loadModel(modelFn, modelShaderProg);
+    auto model = loadModel(modelFn, program, &locationBindings);
 
     controls->setPosition(model.bounds.center);
     controls->setRadius(glm::length(model.bounds.size));
+
+    Uniform<glm::vec3> colorUniform(program.getUniformLocation("color"));
 
     while (wnd->isRunning()) {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::viewMatrix), controls->getViewMatrix());
-        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation("color"), glm::vec3(1.0f, 1.0f, 1.0f));
-        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
+        viewMatUniform.set(controls->getViewMatrix());
+        modelMatUniform.set(model.transform.getTransformationMatrix());
+        colorUniform.set(glm::vec3(1.0f, 1.0f, 1.0f));
 
         model.draw();
 
