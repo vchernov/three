@@ -5,15 +5,15 @@
 namespace three {
 
 template<>
-const unsigned int TypeInfo<float>::dataType = GL_FLOAT;
+const GLenum TypeInfo<float>::dataType = GL_FLOAT;
 
 template<>
-const unsigned int TypeInfo<unsigned int>::dataType = GL_UNSIGNED_INT;
+const GLenum TypeInfo<unsigned int>::dataType = GL_UNSIGNED_INT;
 
 template<>
-const unsigned int TypeInfo<unsigned short>::dataType = GL_UNSIGNED_SHORT;
+const GLenum TypeInfo<unsigned short>::dataType = GL_UNSIGNED_SHORT;
 
 template<>
-const unsigned int TypeInfo<unsigned char>::dataType = GL_UNSIGNED_BYTE;
+const GLenum TypeInfo<unsigned char>::dataType = GL_UNSIGNED_BYTE;
 
 }

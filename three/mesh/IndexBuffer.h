@@ -11,17 +11,14 @@ public:
     IndexBuffer(IndexBuffer&& other) noexcept;
     IndexBuffer& operator=(IndexBuffer&& other) noexcept;
 
-    static void draw(unsigned int primitiveType, unsigned int dataType, int indexCount);
+    static void draw(GLenum primitiveType, GLenum dataType, int indexCount);
 
-    void draw(unsigned int primitiveType) const;
+    void draw(GLenum primitiveType) const;
 
-    unsigned int getDataType() const;
-    int getIndexCount() const;
-
-    void upload(const void* data, unsigned int dataType, int indexSize, int indexCount, unsigned int usage = GL_STATIC_DRAW);
+    void allocate(GLenum dataType, int indexSize, int indexCount, const void* data, GLenum usage = GL_STATIC_DRAW);
 
 private:
-    unsigned int dataType = GL_UNSIGNED_SHORT;
+    GLenum dataType = GL_UNSIGNED_SHORT;
     int indexCount = 0;
 };
 

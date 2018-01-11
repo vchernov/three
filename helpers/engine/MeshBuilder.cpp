@@ -4,21 +4,26 @@
 
 #include "Vertex.h"
 #include "Face3.h"
-#include "AttributeName.h"
+
+using namespace three;
 
 template<>
-void MeshBuilder::addAttributes<VertexPositionColor>(three::VertexBuffer& vertexBuffer) {
-    vertexBuffer.addAttribute<glm::vec3>(AttributeName::position, offsetof(VertexPositionColor, position));
-    vertexBuffer.addAttribute<glm::vec3>(AttributeName::color, offsetof(VertexPositionColor, color));
+std::vector<VertexAttribute> MeshBuilder::getAttributes<VertexPositionColor>(const IAttributeLocationBindings* locationBindings) {
+    std::vector<VertexAttribute> attributes;
+    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionColor)));
+    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::color), sizeof(glm::vec3), sizeof(VertexPositionColor)));
+    return attributes;
 }
 
 template<>
-void MeshBuilder::addAttributes<VertexPositionTexture>(three::VertexBuffer& vertexBuffer) {
-    vertexBuffer.addAttribute<glm::vec3>(AttributeName::position, offsetof(VertexPositionTexture, position));
-    vertexBuffer.addAttribute<glm::vec2>(AttributeName::texCoord, offsetof(VertexPositionTexture, texCoord));
+std::vector<VertexAttribute> MeshBuilder::getAttributes<VertexPositionTexture>(const IAttributeLocationBindings* locationBindings) {
+    std::vector<VertexAttribute> attributes;
+    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionTexture) ));
+    attributes.push_back(VertexAttribute::create<glm::vec2>(locationBindings->getAttributeInfo(AttributeSemantic::texCoord), sizeof(glm::vec3), sizeof(VertexPositionTexture)));
+    return attributes;
 }
 
 template<>
-void MeshBuilder::uploadFaces<Face3>(three::IndexBuffer& indexBuffer, const std::vector<Face3>& faces) {
-    indexBuffer.upload(faces.data(), three::TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size());
+void MeshBuilder::uploadFaces<Face3>(IndexBuffer& indexBuffer, const std::vector<Face3>& faces) {
+    indexBuffer.allocate(TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size(), faces.data());
 }

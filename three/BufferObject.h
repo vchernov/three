@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cassert>
+#include <vector>
+#include <list>
 
 #include <GL/glew.h>
 
@@ -39,12 +41,37 @@ public:
         glBindBuffer(target, 0);
     }
 
-protected:
-    void static upload(const void* data, int length, unsigned int usage) {
-        glBufferData(target, length, data, usage);
+    static void allocate(int size, const void* data = nullptr, GLenum usage = GL_STATIC_DRAW) {
+        glBufferData(target, size, data, usage);
         assert(glGetError() == GL_NO_ERROR);
     }
 
+    template<typename T>
+    static void allocate(const std::vector<T>& container, GLenum usage = GL_STATIC_DRAW) {
+        allocate(container.size() * sizeof(T), container.data(), usage);
+    }
+
+    template<typename T, size_t size>
+    static void allocate(const std::array<T, size>& container, GLenum usage = GL_STATIC_DRAW) {
+        allocate(container.size() * sizeof(T), container.data(), usage);
+    }
+
+    void static upload(int offset, int size, const void* data) {
+        glBufferSubData(target, offset, size, data);
+        assert(glGetError() == GL_NO_ERROR);
+    }
+
+    template<typename T>
+    static void upload(int offset, const std::vector<T>& container) {
+        upload(offset, container.size() * sizeof(T), container.data());
+    }
+
+    template<typename T, size_t size>
+    static void upload(int offset, const std::array<T, size>& container) {
+        upload(offset, container.size() * sizeof(T), container.data());
+    }
+
+protected:
     void bindBlock(unsigned int blockId) const {
         glBindBufferBase(target, blockId, buffer);
     }

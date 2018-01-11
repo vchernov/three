@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 
 #include "../../three/shader/ShaderProgram.h"
+#include "../../three/shader/Uniform.h"
+#include "../../three/shader/AttributeInfo.h"
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
@@ -12,7 +14,8 @@
 #include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/Shape.h"
+#include "../../helpers/engine/PrimitiveGenerator.h"
+#include "../../helpers/engine/AttributeLocationBindings.h"
 
 using namespace three;
 
@@ -44,26 +47,29 @@ int main(int argc, char** argv) {
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    auto shaderProg = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
-    shaderProg.use();
+    auto program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
+    program.use();
+
+    auto locationBindings = std::make_shared<AttributeLocationBindings>();
+    locationBindings->addAttributes(&program);
+
+    auto primitiveGenerator = PrimitiveGenerator(locationBindings);
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
+    Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
     std::vector<Model> models;
     
     {
-        auto geo = Shape::createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8);
-        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
-        Model model(std::move(mesh));
+        Model model(primitiveGenerator.createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
         models.push_back(std::move(model));
     }
 
     {
-        auto geo = Shape::createCube();
-        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
-        Model model(std::move(mesh));
+        Model model(primitiveGenerator.createCube());
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, 0.0f, -0.25f);
@@ -71,25 +77,25 @@ int main(int argc, char** argv) {
     }
 
     {
-        auto geo = Shape::createSphere(32, 32);
-        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType);
-        Model model(std::move(mesh));
+        Model model(primitiveGenerator.createSphere(32, 32));
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.25f, 0.25f);
         models.push_back(std::move(model));
     }
 
+    Uniform<glm::vec3> colorUniform(program.getUniformLocation("color"));
+
     while (wnd->isRunning()) {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::viewMatrix), controls->getViewMatrix());
+        viewMatUniform.set(controls->getViewMatrix());
 
         for (const auto& model : models) {
-            shaderProg.setUniform(shaderProg.getUniformLocation("color"), model.color);
-            shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
+            colorUniform.set(model.color);
+            modelMatUniform.set(model.transform.getTransformationMatrix());
             model.mesh.draw();
         }
 

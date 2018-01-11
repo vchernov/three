@@ -1,5 +1,7 @@
 ﻿#include "VertexArrayObject.h"
 
+#include <cassert>
+
 namespace three {
 
 VertexArrayObject::VertexArrayObject() {
@@ -27,6 +29,26 @@ void VertexArrayObject::bind() const {
 
 void VertexArrayObject::unbind() {
     glBindVertexArray(0);
+}
+
+void VertexArrayObject::enableAttribute(int index) {
+    glEnableVertexAttribArray(index);
+    assert(glGetError() == GL_NO_ERROR);
+}
+
+void VertexArrayObject::disableAttribute(int index) {
+    glDisableVertexAttribArray(index);
+    assert(glGetError() == GL_NO_ERROR);
+}
+
+void VertexArrayObject::registerAttribute(const VertexAttribute& attribute) {
+    glVertexAttribPointer(
+        attribute.location,
+        attribute.componentCount,
+        attribute.dataType,
+        attribute.normalized ? GL_TRUE : GL_FALSE,
+        attribute.stride,
+        (GLvoid*)attribute.offset);
 }
 
 }

@@ -8,8 +8,6 @@ namespace three {
 
 class Shader {
 public:
-    friend class ShaderProgram;
-
     Shader(const std::string& source, GLenum type);
     virtual ~Shader();
 
@@ -18,6 +16,8 @@ public:
 
     Shader(Shader&& other) noexcept;
     Shader& operator=(Shader&& other) noexcept;
+
+    GLuint getHandle() const;
 
     bool getCompileStatus() const;
     std::string getInfoLog() const;

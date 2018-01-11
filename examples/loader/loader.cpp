@@ -23,7 +23,7 @@ Model loadModel(const std::string& fn, const ShaderProgram& shaderProg) {
     Model model;
     std::list<GeometryBuffer> geos = ModelLoader::load(fn, model.bounds);
     for (auto& geo : geos) {
-        model.meshes.push_back(Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType));
+        //model.meshes.push_back(Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), shaderProg, geo.primitiveType));
     }
     return model;
 }
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     modelShaderProg.use();
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 100.0f);
-    modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
 
     assert(glGetError() == GL_NO_ERROR);
 
@@ -67,9 +67,9 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::viewMatrix), controls->getViewMatrix());
-        modelShaderProg.setUniform(modelShaderProg.getUniformLocation("color"), glm::vec3(1.0f, 1.0f, 1.0f));
-        modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
+        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::viewMatrix), controls->getViewMatrix());
+        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation("color"), glm::vec3(1.0f, 1.0f, 1.0f));
+        //modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
 
         model.draw();
 

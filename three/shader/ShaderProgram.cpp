@@ -2,10 +2,9 @@
 
 #include <sstream>
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Shader.h"
 #include "UniformBuffer.h"
+#include "AttributeInfo.h"
 
 namespace three {
 
@@ -28,12 +27,16 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept {
     return *this;
 }
 
+GLuint ShaderProgram::getHandle() const {
+    return program;
+}
+
 void ShaderProgram::attachShader(const Shader& shader) {
-    glAttachShader(program, shader.shader);
+    glAttachShader(program, shader.getHandle());
 }
 
 void ShaderProgram::detachShader(const Shader& shader) {
-    glDetachShader(program, shader.shader);
+    glDetachShader(program, shader.getHandle());
 }
 
 void ShaderProgram::link() {
@@ -59,7 +62,7 @@ std::string ShaderProgram::getInfoLog() const {
     return ss.str();
 }
 
-void ShaderProgram::use() const {
+void ShaderProgram::use() {
     glUseProgram(program);
 }
 
@@ -80,24 +83,29 @@ void ShaderProgram::bindUniformBlock(const std::string& name, const UniformBuffe
     glUniformBlockBinding(program, blockIndex, buffer.blockId);
 }
 
-template<>
-void ShaderProgram::setUniform(int location, float value) {
-    glUniform1f(location, value);
-}
+std::vector<AttributeInfo> ShaderProgram::getActiveAttributes() const {
+    std::vector<AttributeInfo> attributes;
 
-template<>
-void ShaderProgram::setUniform(int location, int value) {
-    glUniform1i(location, value);
-}
+    int count;
+    glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
 
-template<>
-void ShaderProgram::setUniform(int location, glm::vec3 value) {
-    glUniform3fv(location, 1, glm::value_ptr(value));
-}
+    const GLsizei nameBuffSize = 16;
+    GLchar name[nameBuffSize];
 
-template<>
-void ShaderProgram::setUniform(int location, glm::mat4 value) {
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+    for (auto i = 0; i < count; i++) {
+        GLint size;
+        GLenum type;
+        GLsizei length;
+        glGetActiveAttrib(program, i, nameBuffSize, &length, &size, &type, name);
+
+        AttributeInfo attribInfo;
+        attribInfo.name = name;
+        attribInfo.dataType = type;
+        attribInfo.location = getAttributeLocation(name);
+        attributes.push_back(attribInfo);
+    }
+
+    return attributes;
 }
 
 }

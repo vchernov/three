@@ -15,8 +15,6 @@ public:
 
     void bindBlock();
 
-    void allocate(int size);
-
     void write(void* data, int offset, int length);
 
 private:

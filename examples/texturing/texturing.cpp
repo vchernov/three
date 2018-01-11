@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../../three/shader/ShaderProgram.h"
+#include "../../three/shader/Uniform.h"
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/OrthographicCamera.h"
 
@@ -18,6 +19,7 @@
 #include "../../helpers/engine/ImageUtils.h"
 #include "../../helpers/engine/MeshBuilder.h"
 #include "../../helpers/engine/UniformName.h"
+#include "../../helpers/engine/AttributeLocationBindings.h"
 
 using namespace three;
 
@@ -48,14 +50,17 @@ int main(int argc, char** argv) {
     }
 
     auto wnd = WindowFactory::createWindow("Texturing Example", 1024, 768);
-    auto camera = std::make_unique<OrthographicCamera>(wnd->getWidth(), wnd->getHeight(), 0.1f, 10.0f);
+    auto camera = std::make_unique<OrthographicCamera>(static_cast<float>(wnd->getWidth()), static_cast<float>(wnd->getHeight()), 0.1f, 10.0f);
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
-    auto shaderProg = ShaderUtils::loadShaderProgram("shaders/textured.vert", "shaders/textured.frag");
-    shaderProg.use();
+    auto program = ShaderUtils::loadShaderProgram("shaders/textured.vert", "shaders/textured.frag");
+    program.use();
 
-    auto mesh = MeshBuilder::build(createPlane((float)fmin(wnd->getWidth(), wnd->getHeight()) * 0.40f), shaderProg);
+    AttributeLocationBindings locationBindings;
+    locationBindings.addAttributes(&program);
+
+    auto mesh = MeshBuilder::build(createPlane(static_cast<float>(fmin(wnd->getWidth(), wnd->getHeight()) * 0.40f)), &locationBindings);
 
     auto tex = ImageUtils::loadTexture(imgFn, GL_RGBA8);
 
@@ -65,9 +70,9 @@ int main(int argc, char** argv) {
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, glm::vec3(wnd->getWidth() * 0.5f, wnd->getHeight() * 0.5f, -1.0f));
 
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::modelMatrix), transform);
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::viewMatrix), glm::mat4(1.0f));
-    shaderProg.setUniform(shaderProg.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::modelMatrix), transform);
+    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::viewMatrix), glm::mat4(1.0f));
+    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
 
     while (wnd->isRunning()) {
         wnd->processEvents();

@@ -26,6 +26,10 @@ Shader& Shader::operator=(Shader&& other) noexcept {
     return *this;
 }
 
+GLuint Shader::getHandle() const {
+    return shader;
+}
+
 bool Shader::getCompileStatus() const {
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);

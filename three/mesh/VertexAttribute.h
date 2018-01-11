@@ -1,29 +1,32 @@
 ﻿#pragma once
 
-#include <string>
+#include <GL/glew.h>
 
 namespace three {
 
+struct AttributeInfo;
+
 struct VertexAttribute {
     VertexAttribute(
-        std::string name,
-        unsigned int dataType,
-        int size,
+        int location,
+        GLenum dataType,
+        int componentCount,
         int offset,
-        bool normalize = false)
-        :
-        name(std::move(name)),
-        dataType(dataType),
-        size(size),
-        offset(offset),
-        normalize(normalize) {
-    }
+        int stride,
+        bool normalized = false);
 
-    const std::string name;
-    const unsigned int dataType;
-    const int size;
+    const int location;
+    const GLenum dataType;
+    const int componentCount;
     const int offset;
-    const bool normalize;
+    const int stride;
+    const bool normalized;
+
+    template<typename T>
+    static VertexAttribute create(int location, int numComponents, int offset, int stride);
+
+    template<typename T>
+    static VertexAttribute create(const AttributeInfo& info, int offset, int stride);
 };
 
 }

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <list>
+#include <vector>
 
 #include "VertexArrayObject.h"
 #include "VertexBuffer.h"
@@ -12,15 +12,9 @@ class Mesh {
 public:
     static Mesh create(
         const VertexBuffer& vertexBuffer,
+        std::vector<VertexAttribute> attributes,
         IndexBuffer indexBuffer,
-        const ShaderProgram& shaderProg,
-        unsigned int primitiveType = GL_TRIANGLES);
-
-    static Mesh create(
-        const std::list<VertexBuffer>& vertexBuffers,
-        IndexBuffer indexBuffer,
-        const ShaderProgram& shaderProg,
-        unsigned int primitiveType = GL_TRIANGLES);
+        GLenum primitiveType = GL_TRIANGLES);
 
     virtual ~Mesh() = default;
 
@@ -33,11 +27,11 @@ public:
     void draw() const;
 
 private:
-    explicit Mesh(IndexBuffer indexBuffer, unsigned int primitiveType);
+    Mesh(IndexBuffer indexBuffer, GLenum primitiveType);
 
     VertexArrayObject vao;
     IndexBuffer indexBuffer;
-    unsigned int primitiveType;
+    GLenum primitiveType;
 };
 
 }

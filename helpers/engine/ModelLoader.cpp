@@ -21,16 +21,16 @@ GeometryBuffer loadMesh(const aiMesh* mesh) {
     if (mesh->HasPositions()) {
         VertexBuffer pointBuffer;
         pointBuffer.bind();
-        pointBuffer.upload(mesh->mVertices, mesh->mNumVertices, sizeof(aiVector3D));
-        pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-        geometry.vertexBuffers.push_back(std::move(pointBuffer));
+        //pointBuffer.allocate(mesh->mVertices, mesh->mNumVertices, sizeof(aiVector3D));
+        //pointBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
+        //geometry.vertexBuffers.push_back(std::move(pointBuffer));
     }
 
     if (mesh->HasNormals()) {
         VertexBuffer normalBuffer;
         normalBuffer.bind();
-        normalBuffer.upload(mesh->mNormals, mesh->mNumVertices, sizeof(aiVector3D));
-        normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
+        //normalBuffer.allocate(mesh->mNormals, mesh->mNumVertices, sizeof(aiVector3D));
+        //normalBuffer.addAttribute({AttributeName::normal, TypeInfo<float>::dataType, 3, 0});
     }
 
     if (mesh->HasFaces()) {
@@ -44,7 +44,7 @@ GeometryBuffer loadMesh(const aiMesh* mesh) {
         }
 
         geometry.indexBuffer.bind();
-        geometry.indexBuffer.upload(indices.data(), TypeInfo<unsigned int>::dataType, sizeof(unsigned int), indices.size());
+        geometry.indexBuffer.allocate(TypeInfo<unsigned int>::dataType, sizeof(unsigned int), indices.size(), indices.data());
     }
 
     return geometry;

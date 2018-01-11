@@ -1,28 +1,29 @@
 #pragma once
 
 #include "../../three/mesh/Mesh.h"
+#include "../../three/mesh/VertexAttribute.h"
 
 #include "Geometry.h"
+#include "IAttributeLocationBindings.h"
 
 class MeshBuilder {
 public:
     template<typename VertexType, typename FaceType>
-    static three::Mesh build(const Geometry<VertexType, FaceType>& geometry, const three::ShaderProgram& shaderProg) {
+    static three::Mesh build(const Geometry<VertexType, FaceType>& geometry, const IAttributeLocationBindings* locationBindings) {
         three::VertexBuffer vertexBuffer;
         vertexBuffer.bind();
-        vertexBuffer.upload(geometry.vertices);
-        addAttributes<VertexType>(vertexBuffer);
+        three::VertexBuffer::allocate(geometry.vertices);
 
         three::IndexBuffer indexBuffer;
         indexBuffer.bind();
         uploadFaces<FaceType>(indexBuffer, geometry.faces);
 
-        return three::Mesh::create(vertexBuffer, std::move(indexBuffer), shaderProg, geometry.primitiveType);
+        return three::Mesh::create(vertexBuffer, getAttributes<VertexType>(locationBindings), std::move(indexBuffer), geometry.primitiveType);
     }
 
 private:
     template<typename VertexType>
-    static void addAttributes(three::VertexBuffer& vertexBuffer);
+    static std::vector<three::VertexAttribute> getAttributes(const IAttributeLocationBindings* locationBindings);
 
     template<typename FaceType>
     static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces);

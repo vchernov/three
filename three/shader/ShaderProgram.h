@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <GL/glew.h>
 
@@ -8,6 +9,7 @@ namespace three {
 
 class Shader;
 class UniformBuffer;
+struct AttributeInfo;
 
 class ShaderProgram {
 public:
@@ -20,6 +22,8 @@ public:
     ShaderProgram(ShaderProgram&& other) noexcept;
     ShaderProgram& operator=(ShaderProgram&& other) noexcept;
 
+    GLuint getHandle() const;
+
     void attachShader(const Shader& shader);
     void detachShader(const Shader& shader);
 
@@ -28,7 +32,7 @@ public:
     bool getLinkStatus() const;
     std::string getInfoLog() const;
 
-    void use() const;
+    virtual void use();
 
     int getAttributeLocation(const std::string& name) const;
 
@@ -38,8 +42,7 @@ public:
 
     void bindUniformBlock(const std::string& name, const UniformBuffer& buffer);
 
-    template<class T>
-    void setUniform(int location, T value);
+    std::vector<AttributeInfo> getActiveAttributes() const;
 
 protected:
     GLuint program;

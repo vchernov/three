@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 
 #include <GL/glew.h>
 
@@ -7,53 +8,70 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../../three/shader/ShaderProgram.h"
+#include "../../three/shader/Uniform.h"
 #include "../../three/shader/UniformBuffer.h"
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
-#include "../../three/TypeInfo.h"
+#include "../../three/shader/SmartShaderProgram.h"
+#include "../../three/shader/ShaderManager.h"
+#include "../../three/shader/SmartUniform.h"
 
 #include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/Shape.h"
-#include "../../helpers/engine/AttributeName.h"
+#include "../../helpers/engine/PrimitiveGenerator.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/UniformBlockName.h"
+#include "../../helpers/engine/AttributeName.h"
 #include "../../helpers/engine/Time.h"
+#include "../../helpers/engine/AttributeLocationBindings.h"
 
 using namespace three;
 
 struct Model {
-    explicit Model(Mesh mesh)
-        : mesh(std::move(mesh)) {
+public:
+    Model(Mesh mesh, std::shared_ptr<SmartShaderProgram> program)
+        :
+        mesh(std::move(mesh)),
+        program(std::move(program)) {
     }
 
     Mesh mesh;
+    std::shared_ptr<SmartShaderProgram> program;
     ModelTransform transform;
     glm::vec3 color;
 };
 
 class PointLight {
 public:
-    PointLight() {
-        lampShaderProg = ShaderUtils::loadShaderProgram("shaders/lamp.vert", "shaders/lamp.frag");
+    explicit PointLight(std::shared_ptr<ShaderManager> shaderManager) {
+        program = std::make_shared<SmartShaderProgram>(shaderManager);
+        ShaderUtils::loadShaderProgram(program.get(), "shaders/lamp.vert", "shaders/lamp.frag");
+
+        lightColorUniform = program->getUniform<glm::vec3>("lightColor");
+        modelMatrixUniform = program->getUniform<glm::mat4>(UniformName::modelMatrix);
+
+        std::array<glm::vec3, 1> points = {glm::vec3(0.0f, 0.0f, 0.0f)};
 
         vao.bind();
-        vertexBuffer.bind();
-        std::vector<glm::vec3> points = {{0.0f, 0.0f, 0.0f}};
-        vertexBuffer.upload(points);
-        vertexBuffer.addAttribute({AttributeName::position, TypeInfo<float>::dataType, 3, 0});
-        vertexBuffer.enableAttributes(lampShaderProg);
+
+        VertexBuffer vb;
+        vb.bind();
+        VertexBuffer::allocate(points);
+
+        int posAttribLoc = program->getAttributeLocation(AttributeName::position);
+        vao.registerAttribute(VertexAttribute::create<float>(posAttribLoc, 3, 0, sizeof(glm::vec3)));
+        vao.enableAttribute(posAttribLoc);
+
         VertexArrayObject::unbind();
     }
 
-    void draw() {
-        lampShaderProg.use();
-        lampShaderProg.setUniform(lampShaderProg.getUniformLocation("lightColor"), lightColor);
-        lampShaderProg.setUniform(lampShaderProg.getUniformLocation(UniformName::modelMatrix), getTransformationMatrix());
-
+    void draw() const {
+        program->use();
+        modelMatrixUniform.lock()->set(getTransformationMatrix());
+        lightColorUniform.lock()->set(lightColor);
         vao.bind();
-        vertexBuffer.draw(GL_POINTS);
+        VertexBuffer::draw(GL_POINTS, 0, 1);
         VertexArrayObject::unbind();
     }
 
@@ -64,11 +82,12 @@ public:
 
     glm::vec3 position;
     glm::vec3 lightColor;
-    ShaderProgram lampShaderProg;
+    std::shared_ptr<SmartShaderProgram> program;
 
 private:
     VertexArrayObject vao;
-    VertexBuffer vertexBuffer;
+    std::weak_ptr<SmartUniform<glm::vec3>> lightColorUniform;
+    std::weak_ptr<SmartUniform<glm::mat4>> modelMatrixUniform;
 };
 
 int main(int argc, char** argv) {
@@ -91,27 +110,30 @@ int main(int argc, char** argv) {
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
 
-    auto modelShaderProg = ShaderUtils::loadShaderProgram("shaders/phong.vert", "shaders/phong.frag");
+    auto shaderManager = std::make_shared<ShaderManager>();
+    auto smartShaderProgram = std::make_shared<SmartShaderProgram>(shaderManager);
+    ShaderUtils::loadShaderProgram(smartShaderProgram.get(), "shaders/phong.vert", "shaders/phong.frag");
 
-    PointLight light;
+    PointLight light(shaderManager);
     light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    std::vector<Model> models;
+    auto locationBindings = std::make_shared<AttributeLocationBindings>();
+    locationBindings->addAttributes(smartShaderProgram.get());
 
+    auto primitiveGenerator = PrimitiveGenerator(locationBindings);
+
+    std::vector<Model> models;
+    
     {
-        auto geo = Shape::createCube();
-        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), modelShaderProg, geo.primitiveType);
-        Model model(std::move(mesh));
+        Model model(primitiveGenerator.createCube(), smartShaderProgram);
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, -0.15f, -0.25f);
         models.push_back(std::move(model));
     }
-
+    
     {
-        auto geo = Shape::createSphere(32, 32);
-        auto mesh = Mesh::create(geo.vertexBuffers, std::move(geo.indexBuffer), modelShaderProg, geo.primitiveType);
-        Model model(std::move(mesh));
+        Model model(primitiveGenerator.createSphere(32, 32), smartShaderProgram);
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.0f, 0.25f);
@@ -125,10 +147,16 @@ int main(int argc, char** argv) {
     cameraUniformBuffer.write(glm::value_ptr(projMat), sizeof(glm::mat4), sizeof(projMat));
     UniformBuffer::unbind();
 
-    modelShaderProg.bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
-    light.lampShaderProg.bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
+    smartShaderProgram->bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
+    light.program->bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
 
     assert(glGetError() == GL_NO_ERROR);
+
+    Uniform<glm::vec3> colorUniform(smartShaderProgram->getUniformLocation("color"));
+    Uniform<glm::vec3> lightColorUniform(smartShaderProgram->getUniformLocation("lightColor"));
+    Uniform<glm::vec3> lightPosUniform(smartShaderProgram->getUniformLocation("lightPos"));
+    Uniform<glm::vec3> viewPosUniform(smartShaderProgram->getUniformLocation("viewPos"));
+    Uniform<glm::mat4> modelMatrixUniform(smartShaderProgram->getUniformLocation(UniformName::modelMatrix));
 
     while (wnd->isRunning()) {
         wnd->processEvents();
@@ -136,10 +164,14 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float time = (float)Time::getTime();
+        //*
         light.position = glm::vec3(0.0f);
         light.position.x = sinf(time * 0.9f) * 1.2f;
         light.position.y = sinf(time * 0.2f) * 0.8f;
         light.position.z = sinf(time * 2.0f) * 0.6f;
+        /*/
+        light.position = controls->getEyePosition();
+        //*/
 
         cameraUniformBuffer.bindBlock();
         glm::mat4 viewMat = controls->getViewMatrix();
@@ -148,14 +180,13 @@ int main(int argc, char** argv) {
 
         light.draw(); // gizmos
 
-        modelShaderProg.use();
-
         for (const auto& model : models) {
-            modelShaderProg.setUniform(modelShaderProg.getUniformLocation("color"), model.color);
-            modelShaderProg.setUniform(modelShaderProg.getUniformLocation("lightColor"), light.lightColor);
-            modelShaderProg.setUniform(modelShaderProg.getUniformLocation("lightPos"), light.position);
-            modelShaderProg.setUniform(modelShaderProg.getUniformLocation("viewPos"), controls->getEyePosition());
-            modelShaderProg.setUniform(modelShaderProg.getUniformLocation(UniformName::modelMatrix), model.transform.getTransformationMatrix());
+            model.program->use();
+            colorUniform.set(model.color);
+            lightColorUniform.set(light.lightColor);
+            lightPosUniform.set(light.position);
+            viewPosUniform.set(controls->getEyePosition());
+            modelMatrixUniform.set(model.transform.getTransformationMatrix());
             model.mesh.draw();
         }
 

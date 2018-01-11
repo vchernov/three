@@ -8,10 +8,11 @@ Window::Window(const std::string& title, int width, int height)
     :
     width(width),
     height(height) {
+    glfwSetErrorCallback(errorCallback);
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 8);
@@ -32,29 +33,23 @@ Window::Window(const std::string& title, int width, int height)
     }
     glGetError(); // GLEW has a long-existing bug where calling glewInit() always sets the GL_INVALID_ENUM error flag
 
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
+
     glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, &Window::keyCallback);
     glfwSetMouseButtonCallback(window, &Window::mouseButtonCallback);
     glfwSetCursorPosCallback(window, &Window::cursorPositionCallback);
     glfwSetScrollCallback(window, &Window::scrollCallback);
 
-    glViewport(0, 0, width, height);
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    glViewport(0, 0, fbWidth, fbHeight);
 
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     assert(glGetError() == GL_NO_ERROR);
-
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
-
-    GLint maxUniformBlockSize;
-    glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
-    std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE = " << maxUniformBlockSize << std::endl;
-
-    GLint maxUniformBufferBindings;
-    glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
-    std::cout << "GL_MAX_UNIFORM_BUFFER_BINDINGS = " << maxUniformBufferBindings << std::endl;
 }
 
 Window::~Window() {
@@ -93,6 +88,10 @@ void Window::handleMouseButton(int button, int action, int mods) {
 }
 
 void Window::handleScroll(double xoffset, double yoffset) {
+}
+
+void Window::errorCallback(int error, const char* description) {
+    std::cerr << description << std::endl;
 }
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

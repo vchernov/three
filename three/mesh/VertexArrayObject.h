@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "VertexAttribute.h"
+
 #include <GL/glew.h>
 
 namespace three {
@@ -17,6 +19,11 @@ public:
 
     void bind() const;
     static void unbind();
+
+    static void enableAttribute(int index);
+    static void disableAttribute(int index);
+
+    static void registerAttribute(const VertexAttribute& attribute);
 
 private:
     GLuint vao;
