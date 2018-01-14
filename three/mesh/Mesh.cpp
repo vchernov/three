@@ -16,13 +16,13 @@ void Mesh::draw() const {
 
 Mesh Mesh::create(
     const VertexBuffer& vertexBuffer,
-    std::vector<VertexAttribute> attributes,
+    const AttributeBindings& bindings,
     IndexBuffer indexBuffer,
     GLenum primitiveType) {
     Mesh mesh(std::move(indexBuffer), primitiveType);
     mesh.vao.bind();
     vertexBuffer.bind();
-    for (const auto& attribute : attributes) {
+    for (const auto& attribute : bindings.attributes) {
         mesh.vao.registerAttribute(attribute);
         mesh.vao.enableAttribute(attribute.location);
     }

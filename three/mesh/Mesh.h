@@ -1,10 +1,9 @@
 ﻿#pragma once
 
-#include <vector>
-
 #include "VertexArrayObject.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "AttributeBindings.h"
 
 namespace three {
 
@@ -12,7 +11,7 @@ class Mesh {
 public:
     static Mesh create(
         const VertexBuffer& vertexBuffer,
-        std::vector<VertexAttribute> attributes,
+        const AttributeBindings& bindings,
         IndexBuffer indexBuffer,
         GLenum primitiveType = GL_TRIANGLES);
 

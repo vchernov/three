@@ -5,29 +5,28 @@
 
 #include <glm/glm.hpp>
 
-#include <GL/glew.h>
-
 namespace three {
 
 VertexAttribute::VertexAttribute(
-    int location,
+    GLuint location,
     GLenum dataType,
-    int numComponents,
+    int componentCount,
     int offset,
     int stride,
     bool normalized)
     :
     location(location),
     dataType(dataType),
-    componentCount(numComponents),
+    componentCount(componentCount),
     offset(offset),
     stride(stride),
     normalized(normalized) {
 }
 
 template<>
-VertexAttribute VertexAttribute::create<float>(int location, int numComponents, int offset, int stride) {
-    return VertexAttribute(location, TypeInfo<float>::dataType, numComponents, offset, stride, false);
+VertexAttribute VertexAttribute::create<float>(int location, int componentCount, int offset, int stride) {
+    assert(location >= 0);
+    return VertexAttribute(location, TypeInfo<float>::dataType, componentCount, offset, stride, false);
 }
 
 template<>

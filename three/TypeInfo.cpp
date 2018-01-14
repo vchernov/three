@@ -1,7 +1,5 @@
 ﻿#include "TypeInfo.h"
 
-#include <GL/glew.h>
-
 namespace three {
 
 template<>

@@ -15,7 +15,7 @@ using namespace three;
 Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBindings) {
     assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
 
-    std::vector<VertexAttribute> attributes;
+    AttributeBindings attributeBindings;
     VertexBuffer vertexBuffer;
     vertexBuffer.bind();
 
@@ -28,13 +28,13 @@ Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBind
 
     VertexBuffer::upload(0, positionsLength, mesh->mVertices);
     if (locationBindings->hasAttribute(AttributeSemantic::position)) {
-        attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(aiVector3D)));
+        attributeBindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(aiVector3D)));
     }
 
     if (mesh->HasNormals()) {
         VertexBuffer::upload(positionsLength, normalsLength, mesh->mNormals);
         if (locationBindings->hasAttribute(AttributeSemantic::normal)) {
-            attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(aiVector3D)));
+            attributeBindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(aiVector3D)));
         }
     }
 
@@ -56,7 +56,7 @@ Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBind
         IndexBuffer::unbind();
     }
 
-    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_TRIANGLES);
+    return Mesh::create(vertexBuffer, attributeBindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
 void extendBounds(const aiMesh* mesh, glm::vec3& lower, glm::vec3& upper) {

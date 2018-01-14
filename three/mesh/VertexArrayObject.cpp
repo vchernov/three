@@ -31,12 +31,12 @@ void VertexArrayObject::unbind() {
     glBindVertexArray(0);
 }
 
-void VertexArrayObject::enableAttribute(int index) {
+void VertexArrayObject::enableAttribute(GLuint index) {
     glEnableVertexAttribArray(index);
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void VertexArrayObject::disableAttribute(int index) {
+void VertexArrayObject::disableAttribute(GLuint index) {
     glDisableVertexAttribArray(index);
     assert(glGetError() == GL_NO_ERROR);
 }
@@ -48,7 +48,7 @@ void VertexArrayObject::registerAttribute(const VertexAttribute& attribute) {
         attribute.dataType,
         attribute.normalized ? GL_TRUE : GL_FALSE,
         attribute.stride,
-        (GLvoid*)attribute.offset);
+        reinterpret_cast<GLvoid*>(attribute.offset));
 }
 
 }

@@ -5,6 +5,7 @@
 #include "Face3.h"
 
 #include "../../three/TypeInfo.h"
+#include "../../three/mesh/AttributeBindings.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/normal.hpp>
@@ -41,15 +42,15 @@ Mesh PrimitiveGenerator::createTriangle() const {
     VertexBuffer::allocate(vertices);
     VertexBuffer::unbind();
 
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3)));
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3)));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
     indexBuffer.allocate(TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size(), faces.data());
     IndexBuffer::unbind();
 
-    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_TRIANGLES);
+    return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
 Mesh PrimitiveGenerator::createCube() const {
@@ -94,10 +95,10 @@ Mesh PrimitiveGenerator::createCube() const {
     VertexBuffer::allocate(vertices);
     VertexBuffer::unbind();
 
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3) + sizeof(glm::vec3)));
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3) + sizeof(glm::vec3)));
     if (locationBindings->hasAttribute(AttributeSemantic::normal)) {
-        attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::normal), sizeof(glm::vec3), sizeof(glm::vec3) + sizeof(glm::vec3)));
+        bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::normal), sizeof(glm::vec3), sizeof(glm::vec3) + sizeof(glm::vec3)));
     }
 
     IndexBuffer indexBuffer;
@@ -105,7 +106,7 @@ Mesh PrimitiveGenerator::createCube() const {
     indexBuffer.allocate(TypeInfo<unsigned char>::dataType, sizeof(unsigned char), indices.size(), indices.data());
     IndexBuffer::unbind();
 
-    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_TRIANGLES);
+    return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
 Mesh PrimitiveGenerator::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int rows, int columns) const {
@@ -159,15 +160,15 @@ Mesh PrimitiveGenerator::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec
     VertexBuffer::allocate(vertices);
     VertexBuffer::unbind();
 
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3)));
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(glm::vec3)));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
     indexBuffer.allocate(TypeInfo<unsigned short>::dataType, sizeof(unsigned short), indices.size(), indices.data());
     IndexBuffer::unbind();
 
-    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_LINES);
+    return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_LINES);
 }
 
 Mesh PrimitiveGenerator::createSphere(int slices, int stacks) const {
@@ -185,13 +186,13 @@ Mesh PrimitiveGenerator::createSphere(int slices, int stacks) const {
     VertexBuffer::upload(positionsLength + normalsLength, texCoordsLength, mesh->tcoords);
     VertexBuffer::unbind();
 
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(float) * 3));
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(float) * 3));
     if (locationBindings->hasAttribute(AttributeSemantic::normal)) {
-        attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(float) * 3));
+        bindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(float) * 3));
     }
     if (locationBindings->hasAttribute(AttributeSemantic::texCoord)) {
-        attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::texCoord).location, 2, positionsLength + normalsLength, sizeof(float) * 2));
+        bindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::texCoord).location, 2, positionsLength + normalsLength, sizeof(float) * 2));
     }
 
     IndexBuffer indexBuffer;
@@ -200,5 +201,5 @@ Mesh PrimitiveGenerator::createSphere(int slices, int stacks) const {
     IndexBuffer::unbind();
 
     par_shapes_free_mesh(mesh);
-    return Mesh::create(vertexBuffer, attributes, std::move(indexBuffer), GL_TRIANGLES);
+    return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
 }

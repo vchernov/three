@@ -2,11 +2,13 @@
 
 #include <string>
 
+#include <GL/glew.h>
+
 namespace three {
 
 struct AttributeInfo {
     std::string name;
-    unsigned int dataType;
+    GLenum dataType;
     int location = -1;
 };
 

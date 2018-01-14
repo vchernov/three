@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../three/mesh/Mesh.h"
-#include "../../three/mesh/VertexAttribute.h"
+#include "../../three/mesh/AttributeBindings.h"
 
 #include "Geometry.h"
 #include "IAttributeLocationBindings.h"
@@ -23,7 +23,7 @@ public:
 
 private:
     template<typename VertexType>
-    static std::vector<three::VertexAttribute> getAttributes(const IAttributeLocationBindings* locationBindings);
+    static three::AttributeBindings getAttributes(const IAttributeLocationBindings* locationBindings);
 
     template<typename FaceType>
     static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces);

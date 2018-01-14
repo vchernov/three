@@ -8,19 +8,19 @@
 using namespace three;
 
 template<>
-std::vector<VertexAttribute> MeshBuilder::getAttributes<VertexPositionColor>(const IAttributeLocationBindings* locationBindings) {
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionColor)));
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::color), sizeof(glm::vec3), sizeof(VertexPositionColor)));
-    return attributes;
+AttributeBindings MeshBuilder::getAttributes<VertexPositionColor>(const IAttributeLocationBindings* locationBindings) {
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionColor)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::color), sizeof(glm::vec3), sizeof(VertexPositionColor)));
+    return bindings;
 }
 
 template<>
-std::vector<VertexAttribute> MeshBuilder::getAttributes<VertexPositionTexture>(const IAttributeLocationBindings* locationBindings) {
-    std::vector<VertexAttribute> attributes;
-    attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionTexture) ));
-    attributes.push_back(VertexAttribute::create<glm::vec2>(locationBindings->getAttributeInfo(AttributeSemantic::texCoord), sizeof(glm::vec3), sizeof(VertexPositionTexture)));
-    return attributes;
+AttributeBindings MeshBuilder::getAttributes<VertexPositionTexture>(const IAttributeLocationBindings* locationBindings) {
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(locationBindings->getAttributeInfo(AttributeSemantic::position), 0, sizeof(VertexPositionTexture) ));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec2>(locationBindings->getAttributeInfo(AttributeSemantic::texCoord), sizeof(glm::vec3), sizeof(VertexPositionTexture)));
+    return bindings;
 }
 
 template<>

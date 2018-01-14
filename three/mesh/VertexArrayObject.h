@@ -20,8 +20,8 @@ public:
     void bind() const;
     static void unbind();
 
-    static void enableAttribute(int index);
-    static void disableAttribute(int index);
+    static void enableAttribute(GLuint index);
+    static void disableAttribute(GLuint index);
 
     static void registerAttribute(const VertexAttribute& attribute);
 

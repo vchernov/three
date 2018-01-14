@@ -1,7 +1,5 @@
 #include "IndexBuffer.h"
 
-#include <algorithm>
-
 namespace three {
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
