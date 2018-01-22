@@ -11,15 +11,17 @@
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/OrthographicCamera.h"
 
-#include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/Vertex.h"
 #include "../../helpers/engine/Face3.h"
 #include "../../helpers/engine/Geometry.h"
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/ImageUtils.h"
 #include "../../helpers/engine/MeshBuilder.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/AttributeLocationBindings.h"
+
+#include "../../helpers/window/WindowFactory.h"
+
+#include "../../helpers/image/ImageUtils.h"
 
 using namespace three;
 

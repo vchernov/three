@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Window.h"
-#include "../../../three/camera/OrbitControls.h"
+#include "../../three/camera/OrbitControls.h"
 
 class OrbitWindow : public Window {
 public:

@@ -12,12 +12,14 @@
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
-#include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/ModelLoader.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/Model.h"
 #include "../../helpers/engine/AttributeLocationBindings.h"
+
+#include "../../helpers/window/WindowFactory.h"
+
+#include "../../helpers/import/ModelLoader.h"
 
 using namespace three;
 

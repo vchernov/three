@@ -10,11 +10,12 @@
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
-#include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/PrimitiveGenerator.h"
 #include "../../helpers/engine/AttributeLocationBindings.h"
 #include "../../helpers/engine/UniformName.h"
+
+#include "../../helpers/window/WindowFactory.h"
 
 using namespace three;
 

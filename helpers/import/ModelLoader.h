@@ -5,8 +5,8 @@
 
 #include "../../three/mesh/Mesh.h"
 
-#include "IAttributeLocationBindings.h"
-#include "BoundingBox.h"
+#include "../engine/IAttributeLocationBindings.h"
+#include "../engine/BoundingBox.h"
 
 class ModelLoader {
 public:

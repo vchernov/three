@@ -22,7 +22,7 @@ void OrbitWindow::handleMouseButton(int button, int action, int mods) {
 }
 
 void OrbitWindow::handleCursorPosition(double xpos, double ypos) {
-    glm::vec2 cursorPos((float)xpos, (float)ypos);
+    glm::vec2 cursorPos(static_cast<float>(xpos), static_cast<float>(ypos));
     glm::vec2 translation = cursorPos - lastCursorPos;
 
     if (dragButton == GLFW_MOUSE_BUTTON_LEFT) {
@@ -40,5 +40,5 @@ void OrbitWindow::handleCursorPosition(double xpos, double ypos) {
 void OrbitWindow::handleScroll(double xoffset, double yoffset) {
     Window::handleScroll(xoffset, yoffset);
 
-    controls->zoom((float)yoffset);
+    controls->zoom(static_cast<float>(yoffset));
 }

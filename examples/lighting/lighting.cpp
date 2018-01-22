@@ -17,14 +17,15 @@
 #include "../../three/shader/ShaderManager.h"
 #include "../../three/shader/SmartUniform.h"
 
-#include "../../helpers/engine/window/WindowFactory.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/PrimitiveGenerator.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/UniformBlockName.h"
 #include "../../helpers/engine/AttributeName.h"
-#include "../../helpers/engine/Time.h"
 #include "../../helpers/engine/AttributeLocationBindings.h"
+
+#include "../../helpers/window/WindowFactory.h"
+#include "../../helpers/window/Time.h"
 
 using namespace three;
 

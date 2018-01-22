@@ -5,7 +5,7 @@
 
 #include "IWindow.h"
 
-#include "../../../three/camera/OrbitControls.h"
+#include "../../three/camera/OrbitControls.h"
 
 class WindowFactory {
 public:

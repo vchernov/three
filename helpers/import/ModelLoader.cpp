@@ -8,7 +8,7 @@
 
 #include "../../three/TypeInfo.h"
 
-#include "AttributeSemantic.h"
+#include "../engine/AttributeSemantic.h"
 
 using namespace three;
 
