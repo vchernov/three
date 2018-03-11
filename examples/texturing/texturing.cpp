@@ -17,7 +17,6 @@
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/MeshBuilder.h"
 #include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/AttributeLocationBindings.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
@@ -59,10 +58,7 @@ int main(int argc, char** argv) {
     auto program = ShaderUtils::loadShaderProgram("shaders/textured.vert", "shaders/textured.frag");
     program.use();
 
-    AttributeLocationBindings locationBindings;
-    locationBindings.addAttributes(&program);
-
-    auto mesh = MeshBuilder::build(createPlane(static_cast<float>(fmin(wnd->getWidth(), wnd->getHeight()) * 0.40f)), &locationBindings);
+    auto mesh = MeshBuilder::build(createPlane(static_cast<float>(fmin(wnd->getWidth(), wnd->getHeight()) * 0.40f)));
 
     auto tex = ImageUtils::loadTexture(imgFn, GL_RGBA8);
 

@@ -8,14 +8,12 @@
 #include "../../three/shader/ShaderProgram.h"
 #include "../../three/shader/Uniform.h"
 #include "../../three/shader/UniformBuffer.h"
-#include "../../three/mesh/Mesh.h"
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/Model.h"
-#include "../../helpers/engine/AttributeLocationBindings.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
@@ -23,9 +21,9 @@
 
 using namespace three;
 
-Model loadModel(const std::string& fn, const ShaderProgram& shaderProg, const IAttributeLocationBindings* locationBindings) {
+Model loadModel(const std::string& fn) {
     Model model;
-    model.meshes = ModelLoader::load(fn, locationBindings, model.bounds);
+    model.meshes = ModelLoader::load(fn, model.bounds);
     return model;
 }
 
@@ -53,9 +51,6 @@ int main(int argc, char** argv) {
     auto program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
     program.use();
 
-    AttributeLocationBindings locationBindings;
-    locationBindings.addAttributes(&program);
-
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 100.0f);
     Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
     Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
@@ -63,7 +58,7 @@ int main(int argc, char** argv) {
 
     assert(glGetError() == GL_NO_ERROR);
 
-    auto model = loadModel(modelFn, program, &locationBindings);
+    auto model = loadModel(modelFn);
 
     controls->setPosition(model.bounds.center);
     controls->setRadius(glm::length(model.bounds.size));

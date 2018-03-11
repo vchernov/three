@@ -8,11 +8,11 @@
 
 #include "../../three/TypeInfo.h"
 
-#include "../engine/AttributeSemantic.h"
+#include "../engine/AttributeLocation.h"
 
 using namespace three;
 
-Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBindings) {
+Mesh loadMesh(const aiMesh* mesh) {
     assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
 
     AttributeBindings attributeBindings;
@@ -27,15 +27,11 @@ Mesh loadMesh(const aiMesh* mesh, const IAttributeLocationBindings* locationBind
     VertexBuffer::allocate(positionsLength + normalsLength);
 
     VertexBuffer::upload(0, positionsLength, mesh->mVertices);
-    if (locationBindings->hasAttribute(AttributeSemantic::position)) {
-        attributeBindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::position).location, 3, 0, sizeof(aiVector3D)));
-    }
+    attributeBindings.attributes.push_back(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::position), 3, 0, sizeof(aiVector3D)));
 
     if (mesh->HasNormals()) {
         VertexBuffer::upload(positionsLength, normalsLength, mesh->mNormals);
-        if (locationBindings->hasAttribute(AttributeSemantic::normal)) {
-            attributeBindings.attributes.push_back(VertexAttribute::create<float>(locationBindings->getAttributeInfo(AttributeSemantic::normal).location, 3, positionsLength, sizeof(aiVector3D)));
-        }
+        attributeBindings.attributes.push_back(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::normal), 3, positionsLength, sizeof(aiVector3D)));
     }
 
     VertexBuffer::unbind();
@@ -71,7 +67,7 @@ void extendBounds(const aiMesh* mesh, glm::vec3& lower, glm::vec3& upper) {
     }
 }
 
-std::vector<Mesh> ModelLoader::load(const std::string& fn, const IAttributeLocationBindings* locationBindings, BoundingBox& bounds) {
+std::vector<Mesh> ModelLoader::load(const std::string& fn, BoundingBox& bounds) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(fn.c_str(), aiProcess_Triangulate);
     if (scene == nullptr) {
@@ -85,7 +81,7 @@ std::vector<Mesh> ModelLoader::load(const std::string& fn, const IAttributeLocat
     std::vector<Mesh> meshes;
     for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
         const aiMesh* mesh = scene->mMeshes[i];
-        meshes.push_back(loadMesh(mesh, locationBindings));
+        meshes.push_back(loadMesh(mesh));
         extendBounds(mesh, lower, upper);
     }
 

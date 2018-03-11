@@ -18,11 +18,10 @@
 #include "../../three/shader/SmartUniform.h"
 
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/PrimitiveGenerator.h"
+#include "../../helpers/engine/Shape.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/UniformBlockName.h"
-#include "../../helpers/engine/AttributeName.h"
-#include "../../helpers/engine/AttributeLocationBindings.h"
+#include "../../helpers/engine/AttributeLocation.h"
 
 #include "../../helpers/window/WindowFactory.h"
 #include "../../helpers/window/Time.h"
@@ -60,9 +59,8 @@ public:
         vb.bind();
         VertexBuffer::allocate(points);
 
-        int posAttribLoc = program->getAttributeLocation(AttributeName::position);
-        vao.registerAttribute(VertexAttribute::create<float>(posAttribLoc, 3, 0, sizeof(glm::vec3)));
-        vao.enableAttribute(posAttribLoc);
+        vao.registerAttribute(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::position), 3, 0, sizeof(glm::vec3)));
+        vao.enableAttribute(static_cast<int>(AttributeLocation::position));
 
         VertexArrayObject::unbind();
     }
@@ -118,15 +116,10 @@ int main(int argc, char** argv) {
     PointLight light(shaderManager);
     light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    auto locationBindings = std::make_shared<AttributeLocationBindings>();
-    locationBindings->addAttributes(smartShaderProgram.get());
-
-    auto primitiveGenerator = PrimitiveGenerator(locationBindings);
-
     std::vector<Model> models;
     
     {
-        Model model(primitiveGenerator.createCube(), smartShaderProgram);
+        Model model(Shape::createCube(), smartShaderProgram);
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, -0.15f, -0.25f);
@@ -134,7 +127,7 @@ int main(int argc, char** argv) {
     }
     
     {
-        Model model(primitiveGenerator.createSphere(32, 32), smartShaderProgram);
+        Model model(Shape::createSphere(32, 32), smartShaderProgram);
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.0f, 0.25f);

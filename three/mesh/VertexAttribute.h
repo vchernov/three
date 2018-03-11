@@ -26,6 +26,9 @@ struct VertexAttribute {
     static VertexAttribute create(int location, int componentCount, int offset, int stride);
 
     template<typename T>
+    static VertexAttribute create(int location, int offset, int stride);
+
+    template<typename T>
     static VertexAttribute create(const AttributeInfo& info, int offset, int stride);
 };
 

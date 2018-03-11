@@ -13,8 +13,7 @@
 
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/PrimitiveGenerator.h"
-#include "../../helpers/engine/AttributeLocationBindings.h"
+#include "../../helpers/engine/Shape.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
@@ -51,11 +50,6 @@ int main(int argc, char** argv) {
     auto program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
     program.use();
 
-    auto locationBindings = std::make_shared<AttributeLocationBindings>();
-    locationBindings->addAttributes(&program);
-
-    auto primitiveGenerator = PrimitiveGenerator(locationBindings);
-
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
     Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
     Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
@@ -64,13 +58,13 @@ int main(int argc, char** argv) {
     std::vector<Model> models;
     
     {
-        Model model(primitiveGenerator.createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8));
+        Model model(Shape::createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
         models.push_back(std::move(model));
     }
 
     {
-        Model model(primitiveGenerator.createCube());
+        Model model(Shape::createCube());
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, 0.0f, -0.25f);
@@ -78,7 +72,7 @@ int main(int argc, char** argv) {
     }
 
     {
-        Model model(primitiveGenerator.createSphere(32, 32));
+        Model model(Shape::createSphere(32, 32));
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.25f, 0.25f);

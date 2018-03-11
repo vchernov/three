@@ -11,8 +11,7 @@
 #include "../../three/transform/ModelTransform.h"
 
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/PrimitiveGenerator.h"
-#include "../../helpers/engine/AttributeLocationBindings.h"
+#include "../../helpers/engine/Shape.h"
 #include "../../helpers/engine/UniformName.h"
 
 #include "../../helpers/window/WindowFactory.h"
@@ -49,12 +48,8 @@ int main(int argc, char** argv) {
     Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
     Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
-    auto locationBindings = std::make_shared<AttributeLocationBindings>();
-    locationBindings->addAttributes(&program);
-    PrimitiveGenerator generator(locationBindings);
-
-    auto primitiveMesh = generator.createTriangle();
-    auto gridMesh = generator.createGrid(glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f), 8, 8);
+    auto primitiveMesh = Shape::createTriangle();
+    auto gridMesh = Shape::createGrid(glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f), 8, 8);
 
     std::vector<Model> models;
 
