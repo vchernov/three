@@ -1,9 +1,11 @@
 #pragma once
 
+#include "../../three/TypeInfo.h"
 #include "../../three/mesh/Mesh.h"
 #include "../../three/mesh/AttributeBindings.h"
 
 #include "Geometry.h"
+#include "BoundingBox.h"
 
 class MeshBuilder {
 public:
@@ -25,5 +27,7 @@ private:
     static three::AttributeBindings getAttributes();
 
     template<typename FaceType>
-    static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces);
+    static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces) {
+        indexBuffer.allocate(three::TypeInfo<typename FaceType::ValueType>::dataType, sizeof(FaceType::ValueType), FaceType::getIndexCount() * faces.size(), faces.data());
+    }
 };

@@ -1,9 +1,6 @@
 #include "MeshBuilder.h"
 
-#include "../../three/TypeInfo.h"
-
 #include "Vertex.h"
-#include "Face3.h"
 #include "AttributeLocation.h"
 
 using namespace three;
@@ -25,6 +22,9 @@ AttributeBindings MeshBuilder::getAttributes<VertexPositionTexture>() {
 }
 
 template<>
-void MeshBuilder::uploadFaces<Face3>(IndexBuffer& indexBuffer, const std::vector<Face3>& faces) {
-    indexBuffer.allocate(TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size(), faces.data());
+AttributeBindings MeshBuilder::getAttributes<VertexPositionNormal>() {
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::position), 0, sizeof(VertexPositionNormal)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::normal), sizeof(glm::vec3), sizeof(VertexPositionNormal)));
+    return bindings;
 }

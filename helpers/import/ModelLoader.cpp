@@ -12,6 +12,57 @@
 
 using namespace three;
 
+std::vector<ModelLoader::Geometry> ModelLoader::loadGeometry(const std::string& fn) {
+    std::vector<Geometry> geometry;
+
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(fn.c_str(), aiProcess_Triangulate);
+    if (scene == nullptr) {
+        std::cerr << importer.GetErrorString() << std::endl;
+        return geometry;
+    }
+
+    for (unsigned int mi = 0; mi < scene->mNumMeshes; mi++) {
+        const aiMesh* mesh = scene->mMeshes[mi];
+        assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
+        assert(mesh->HasFaces());
+        assert(mesh->HasPositions());
+        assert(mesh->HasNormals());
+
+        Geometry geo;
+        geo.primitiveType = GL_TRIANGLES;
+
+        for (unsigned int vi = 0; vi < mesh->mNumVertices; vi++) {
+            Geometry::Vertex vertex;
+
+            const aiVector3D& position = mesh->mVertices[vi];
+            vertex.position.x = position.x;
+            vertex.position.y = position.y;
+            vertex.position.z = position.z;
+
+            const aiVector3D& normal = mesh->mNormals[vi];
+            vertex.normal.x = normal.x;
+            vertex.normal.y = normal.y;
+            vertex.normal.z = normal.z;
+
+            geo.vertices.push_back(vertex);
+        }
+
+        for (unsigned int fi = 0; fi < mesh->mNumFaces; fi++) {
+            const aiFace& face = mesh->mFaces[fi];
+            Geometry::Face geoFace;
+            for (auto i = 0; i < geoFace.getIndexCount(); i++) {
+                geoFace.indices[i] = face.mIndices[i];
+            }
+            geo.faces.push_back(geoFace);
+        }
+
+        geometry.push_back(geo);
+    }
+
+    return geometry;
+}
+
 Mesh loadMesh(const aiMesh* mesh) {
     assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
 
@@ -55,38 +106,20 @@ Mesh loadMesh(const aiMesh* mesh) {
     return Mesh::create(vertexBuffer, attributeBindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
-void extendBounds(const aiMesh* mesh, glm::vec3& lower, glm::vec3& upper) {
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        const aiVector3D& vert = mesh->mVertices[i];
-        lower.x = fmin(vert.x, lower.x);
-        lower.y = fmin(vert.y, lower.y);
-        lower.z = fmin(vert.z, lower.z);
-        upper.x = fmax(vert.x, upper.x);
-        upper.y = fmax(vert.y, upper.y);
-        upper.z = fmax(vert.z, upper.z);
-    }
-}
+Model loadModel(const aiScene* scene) {
+    Model model;
 
-std::vector<Mesh> ModelLoader::load(const std::string& fn, BoundingBox& bounds) {
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(fn.c_str(), aiProcess_Triangulate);
-    if (scene == nullptr) {
-        std::cerr << importer.GetErrorString() << std::endl;
-        throw std::runtime_error(importer.GetErrorString());
+    for (unsigned int mi = 0; mi < scene->mNumMeshes; mi++) {
+        const aiMesh* mesh = scene->mMeshes[mi];
+        
+        BoundingBox bounds;
+        for (unsigned int vi = 0; vi < mesh->mNumVertices; vi++) {
+            const aiVector3D& position = mesh->mVertices[vi];
+            bounds.encapsulate(position.x, position.y, position.z);
+        }
+
+        model.meshes.push_back(SubMesh(loadMesh(mesh), bounds));
     }
 
-    glm::vec3 lower = glm::vec3(std::numeric_limits<float>::max());
-    glm::vec3 upper = glm::vec3(-std::numeric_limits<float>::max());
-
-    std::vector<Mesh> meshes;
-    for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
-        const aiMesh* mesh = scene->mMeshes[i];
-        meshes.push_back(loadMesh(mesh));
-        extendBounds(mesh, lower, upper);
-    }
-
-    bounds.size = upper - lower;
-    bounds.center = lower + bounds.size * 0.5f;
-
-    return meshes;
+    return model;
 }

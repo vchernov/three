@@ -6,7 +6,10 @@
 
 template<typename VertexType, typename FaceType>
 struct Geometry {
-    std::vector<VertexType> vertices;
-    std::vector<FaceType> faces;
+    using Vertex = VertexType;
+    using Face = FaceType;
+
+    std::vector<Vertex> vertices;
+    std::vector<Face> faces;
     GLenum primitiveType = GL_TRIANGLES;
 };

@@ -18,6 +18,11 @@ struct VertexPositionColorTexture {
     glm::vec2 texCoord;
 };
 
+struct VertexPositionNormal {
+    glm::vec3 position;
+    glm::vec3 normal;
+};
+
 struct VertexPositionNormalTexture {
     glm::vec3 position;
     glm::vec3 normal;

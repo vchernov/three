@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mutex>
+#include <future>
 
 #include <GL/glew.h>
 
@@ -18,14 +19,9 @@
 #include "../../helpers/window/WindowFactory.h"
 
 #include "../../helpers/import/ModelLoader.h"
+#include "../../helpers/engine/MeshBuilder.h"
 
 using namespace three;
-
-Model loadModel(const std::string& fn) {
-    Model model;
-    model.meshes = ModelLoader::load(fn, model.bounds);
-    return model;
-}
 
 int main(int argc, char** argv) {
     std::cout << "start" << std::endl;
@@ -58,10 +54,10 @@ int main(int argc, char** argv) {
 
     assert(glGetError() == GL_NO_ERROR);
 
-    auto model = loadModel(modelFn);
+    std::vector<Model> models;
+    BoundingBox sceneBounds;
 
-    controls->setPosition(model.bounds.center);
-    controls->setRadius(glm::length(model.bounds.size));
+    std::future<std::vector<ModelLoader::Geometry>> loadResult = std::async(std::launch::async, &ModelLoader::loadGeometry, modelFn);
 
     Uniform<glm::vec3> colorUniform(program.getUniformLocation("color"));
 
@@ -71,12 +67,30 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         viewMatUniform.set(controls->getViewMatrix());
-        modelMatUniform.set(model.transform.getTransformationMatrix());
         colorUniform.set(glm::vec3(1.0f, 1.0f, 1.0f));
 
-        model.draw();
+        for (auto& model : models) {
+            modelMatUniform.set(model.transform.getTransformationMatrix());
+            model.draw();
+        }
 
         wnd->swapBuffers();
+
+        if (loadResult.valid() && loadResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+            std::vector<ModelLoader::Geometry> geo = loadResult.get();
+
+            for (auto& g : geo) {
+                Model model;
+                Mesh mesh = MeshBuilder::build(g);
+                SubMesh submesh = SubMesh(std::move(mesh), BoundingBox::calculate(g.vertices));
+                model.meshes.push_back(std::move(submesh));
+                models.push_back(std::move(model));
+
+                sceneBounds.encapsulate(submesh.getBounds());
+                controls->setPosition(sceneBounds.getCenter());
+                controls->setRadius(glm::length(sceneBounds.getSize()));
+            }
+        }
     }
 
     std::cout << "end" << std::endl;

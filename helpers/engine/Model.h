@@ -3,14 +3,11 @@
 #include <vector>
 
 #include "../../three/transform/ModelTransform.h"
-#include "../../three/mesh/Mesh.h"
 
-#include "BoundingBox.h"
+#include "SubMesh.h"
 
-class Model {
-public:
-    std::vector<three::Mesh> meshes;
-    BoundingBox bounds;
+struct Model final {
+    std::vector<SubMesh> meshes;
     three::ModelTransform transform;
 
     void draw() const;
