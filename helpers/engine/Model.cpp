@@ -2,6 +2,8 @@
 
 void Model::draw() const {
     for (const auto& submesh : meshes) {
-        submesh.getMesh().draw();
+        submesh.shader->use();
+        submesh.modelMatrixUniform.lock()->set(transform.getTransformationMatrix());
+        submesh.mesh.draw();
     }
 }

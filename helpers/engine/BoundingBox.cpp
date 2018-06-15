@@ -1,8 +1,9 @@
 #include "BoundingBox.h"
 
-BoundingBox::BoundingBox() {
-    pointFrontBottomLeft = glm::vec3(std::numeric_limits<float>::max());
-    pointBackTopRight = glm::vec3(-std::numeric_limits<float>::max());
+BoundingBox::BoundingBox()
+    :
+    pointFrontBottomLeft(glm::vec3(std::numeric_limits<float>::max())),
+    pointBackTopRight(glm::vec3(-std::numeric_limits<float>::max())) {
 }
 
 void BoundingBox::encapsulate(float x, float y, float z) {

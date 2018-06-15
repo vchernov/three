@@ -1,15 +1,10 @@
 #include "SubMesh.h"
 
-SubMesh::SubMesh(three::Mesh mesh, BoundingBox bounds)
+#include "UniformName.h"
+
+SubMesh::SubMesh(three::Mesh mesh, std::shared_ptr<three::SmartShaderProgram> shader)
     :
     mesh(std::move(mesh)),
-    bounds(bounds) {
-}
-
-const three::Mesh& SubMesh::getMesh() const {
-    return mesh;
-}
-
-const BoundingBox& SubMesh::getBounds() const {
-    return bounds;
+    shader(std::move(shader)) {
+    modelMatrixUniform = this->shader->getUniform<glm::mat4>(UniformName::modelMatrix);
 }

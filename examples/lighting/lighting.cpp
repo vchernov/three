@@ -110,8 +110,8 @@ int main(int argc, char** argv) {
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
 
     auto shaderManager = std::make_shared<ShaderManager>();
-    auto smartShaderProgram = std::make_shared<SmartShaderProgram>(shaderManager);
-    ShaderUtils::loadShaderProgram(smartShaderProgram.get(), "shaders/phong.vert", "shaders/phong.frag");
+    auto program = std::make_shared<SmartShaderProgram>(shaderManager);
+    ShaderUtils::loadShaderProgram(program.get(), "shaders/phong.vert", "shaders/phong.frag");
 
     PointLight light(shaderManager);
     light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
     std::vector<Model> models;
     
     {
-        Model model(Shape::createCube(), smartShaderProgram);
+        Model model(Shape::createCube(), program);
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, -0.15f, -0.25f);
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
     }
     
     {
-        Model model(Shape::createSphere(32, 32), smartShaderProgram);
+        Model model(Shape::createSphere(32, 32), program);
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.0f, 0.25f);
@@ -135,22 +135,22 @@ int main(int argc, char** argv) {
     }
 
     UniformBuffer cameraUniformBuffer;
-    cameraUniformBuffer.bindBlock();
-    cameraUniformBuffer.allocate(sizeof(glm::mat4) + sizeof(glm::mat4));
+    cameraUniformBuffer.bind();
+    UniformBuffer::allocate(sizeof(glm::mat4) + sizeof(glm::mat4));
     glm::mat4 projMat = camera->getProjectionMatrix();
-    cameraUniformBuffer.write(glm::value_ptr(projMat), sizeof(glm::mat4), sizeof(projMat));
+    UniformBuffer::write(glm::value_ptr(projMat), sizeof(glm::mat4), sizeof(projMat));
     UniformBuffer::unbind();
 
-    smartShaderProgram->bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
+    program->bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
     light.program->bindUniformBlock(UniformBlockName::camera, cameraUniformBuffer);
 
     assert(glGetError() == GL_NO_ERROR);
 
-    Uniform<glm::vec3> colorUniform(smartShaderProgram->getUniformLocation("color"));
-    Uniform<glm::vec3> lightColorUniform(smartShaderProgram->getUniformLocation("lightColor"));
-    Uniform<glm::vec3> lightPosUniform(smartShaderProgram->getUniformLocation("lightPos"));
-    Uniform<glm::vec3> viewPosUniform(smartShaderProgram->getUniformLocation("viewPos"));
-    Uniform<glm::mat4> modelMatrixUniform(smartShaderProgram->getUniformLocation(UniformName::modelMatrix));
+    Uniform<glm::vec3> colorUniform(program->getUniformLocation("color"));
+    Uniform<glm::vec3> lightColorUniform(program->getUniformLocation("lightColor"));
+    Uniform<glm::vec3> lightPosUniform(program->getUniformLocation("lightPos"));
+    Uniform<glm::vec3> viewPosUniform(program->getUniformLocation("viewPos"));
+    Uniform<glm::mat4> modelMatrixUniform(program->getUniformLocation(UniformName::modelMatrix));
 
     while (wnd->isRunning()) {
         wnd->processEvents();
@@ -167,9 +167,9 @@ int main(int argc, char** argv) {
         light.position = controls->getEyePosition();
         //*/
 
-        cameraUniformBuffer.bindBlock();
+        cameraUniformBuffer.bind();
         glm::mat4 viewMat = controls->getViewMatrix();
-        cameraUniformBuffer.write(glm::value_ptr(viewMat), 0, sizeof(viewMat));
+        UniformBuffer::write(glm::value_ptr(viewMat), 0, sizeof(viewMat));
         UniformBuffer::unbind();
 
         light.draw(); // gizmos

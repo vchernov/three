@@ -6,21 +6,18 @@ namespace three {
 
 class UniformBuffer : public BufferObject<GL_UNIFORM_BUFFER> {
 public:
-    friend class ShaderProgram;
-
     UniformBuffer();
 
-    UniformBuffer(UniformBuffer&& other) noexcept;
-    UniformBuffer& operator=(UniformBuffer&& other) noexcept;
+    GLuint getBindingPoint() const;
 
-    void bindBlock();
+    void bindBindingPoint();
 
-    void write(void* data, int offset, int length);
+    static void write(void* data, int offset, int length);
 
 private:
-    static unsigned int nextBlockId;
+    static GLuint nextBindingPoint;
 
-    unsigned int blockId;
+    GLuint bindingPoint;
 };
 
 }

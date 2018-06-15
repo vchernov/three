@@ -74,13 +74,11 @@ int ShaderProgram::getUniformLocation(const std::string& name) const {
     return glGetUniformLocation(program, name.c_str());
 }
 
-int ShaderProgram::getUniformBlockIndex(const std::string& name) const {
-    return glGetUniformBlockIndex(program, name.c_str());
-}
-
 void ShaderProgram::bindUniformBlock(const std::string& name, const UniformBuffer& buffer) {
-    int blockIndex = getUniformBlockIndex(name);
-    glUniformBlockBinding(program, blockIndex, buffer.blockId);
+    const auto index = glGetUniformBlockIndex(program, name.c_str());
+    assert(index != GL_INVALID_INDEX);
+    glUniformBlockBinding(program, index, buffer.getBindingPoint());
+    assert(glGetError() == GL_NO_ERROR);
 }
 
 std::vector<AttributeInfo> ShaderProgram::getActiveAttributes() const {

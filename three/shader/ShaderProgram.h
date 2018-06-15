@@ -38,8 +38,6 @@ public:
 
     int getUniformLocation(const std::string& name) const;
 
-    int getUniformBlockIndex(const std::string& name) const;
-
     void bindUniformBlock(const std::string& name, const UniformBuffer& buffer);
 
     std::vector<AttributeInfo> getActiveAttributes() const;

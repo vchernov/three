@@ -72,11 +72,11 @@ public:
     }
 
 protected:
-    void bindBlock(unsigned int blockId) const {
-        glBindBufferBase(target, blockId, buffer);
+    void bindBindingPoint(GLuint bindingPoint) const {
+        glBindBufferBase(target, bindingPoint, buffer);
     }
 
-    static void* mapRange(int offset, int length, unsigned int access) {
+    static void* mapRange(int offset, int length, GLbitfield access) {
         return glMapBufferRange(target, offset, length, access);
     }
 

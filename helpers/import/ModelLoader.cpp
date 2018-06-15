@@ -51,7 +51,7 @@ std::vector<ModelLoader::Geometry> ModelLoader::loadGeometry(const std::string& 
         for (unsigned int fi = 0; fi < mesh->mNumFaces; fi++) {
             const aiFace& face = mesh->mFaces[fi];
             Geometry::Face geoFace;
-            for (auto i = 0; i < geoFace.getIndexCount(); i++) {
+            for (auto i = 0; i < Geometry::Face::getIndexCount(); i++) {
                 geoFace.indices[i] = face.mIndices[i];
             }
             geo.faces.push_back(geoFace);
@@ -117,8 +117,6 @@ Model loadModel(const aiScene* scene) {
             const aiVector3D& position = mesh->mVertices[vi];
             bounds.encapsulate(position.x, position.y, position.z);
         }
-
-        model.meshes.push_back(SubMesh(loadMesh(mesh), bounds));
     }
 
     return model;
