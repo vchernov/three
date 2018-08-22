@@ -1,13 +1,15 @@
-﻿#pragma once
+#pragma once
 
 #include "VertexArrayObject.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "AttributeBindings.h"
 
-namespace three {
+namespace three
+{
 
-class Mesh {
+class Mesh
+{
 public:
     static Mesh create(
         const VertexBuffer& vertexBuffer,

@@ -1,14 +1,17 @@
-﻿#include "Mesh.h"
+#include "Mesh.h"
 
-namespace three {
+namespace three
+{
 
 Mesh::Mesh(IndexBuffer indexBuffer, GLenum primitiveType)
     :
     indexBuffer(std::move(indexBuffer)),
-    primitiveType(primitiveType) {
+    primitiveType(primitiveType)
+{
 }
 
-void Mesh::draw() const {
+void Mesh::draw() const
+{
     vao.bind();
     indexBuffer.draw(primitiveType);
     VertexArrayObject::unbind();
@@ -18,11 +21,13 @@ Mesh Mesh::create(
     const VertexBuffer& vertexBuffer,
     const AttributeBindings& bindings,
     IndexBuffer indexBuffer,
-    GLenum primitiveType) {
+    GLenum primitiveType)
+{
     Mesh mesh(std::move(indexBuffer), primitiveType);
     mesh.vao.bind();
     vertexBuffer.bind();
-    for (const auto& attribute : bindings.attributes) {
+    for (const auto& attribute : bindings.attributes)
+    {
         mesh.vao.registerAttribute(attribute);
         mesh.vao.enableAttribute(attribute.location);
     }

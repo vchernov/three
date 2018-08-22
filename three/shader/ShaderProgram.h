@@ -5,13 +5,15 @@
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
 class Shader;
 class UniformBuffer;
 struct AttributeInfo;
 
-class ShaderProgram {
+class ShaderProgram
+{
 public:
     ShaderProgram();
     virtual ~ShaderProgram();

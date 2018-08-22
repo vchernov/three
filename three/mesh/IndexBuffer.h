@@ -2,9 +2,11 @@
 
 #include "../BufferObject.h"
 
-namespace three {
+namespace three
+{
 
-class IndexBuffer : public BufferObject<GL_ELEMENT_ARRAY_BUFFER> {
+class IndexBuffer : public BufferObject<GL_ELEMENT_ARRAY_BUFFER>
+{
 public:
     IndexBuffer() = default;
 

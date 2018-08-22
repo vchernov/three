@@ -2,9 +2,11 @@
 
 #include "../BufferObject.h"
 
-namespace three {
+namespace three
+{
 
-class VertexBuffer : public BufferObject<GL_ARRAY_BUFFER> {
+class VertexBuffer : public BufferObject<GL_ARRAY_BUFFER>
+{
 public:
     static void draw(GLenum primitiveType, int first, int count);
 };

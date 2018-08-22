@@ -2,9 +2,11 @@
 
 #include "Camera.h"
 
-namespace three {
+namespace three
+{
 
-class OrthographicCamera : public Camera {
+class OrthographicCamera : public Camera
+{
 public:
     OrthographicCamera(float width, float height, float near, float far);
 

@@ -6,7 +6,8 @@
 
 #include "SubMesh.h"
 
-struct Model final {
+struct Model final
+{
     std::vector<SubMesh> meshes;
     three::ModelTransform transform;
 

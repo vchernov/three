@@ -2,16 +2,20 @@
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
 template<GLenum target>
-class Texture {
+class Texture
+{
 public:
-    Texture() {
+    Texture()
+    {
         glGenTextures(1, &texture);
     }
 
-    virtual ~Texture() {
+    virtual ~Texture()
+    {
         glDeleteTextures(1, &texture);
     }
 
@@ -19,34 +23,42 @@ public:
     Texture& operator=(const Texture&) = delete;
 
     Texture(Texture&& other) noexcept
-        : texture(other.texture) {
+        :
+        texture(other.texture)
+    {
         other.texture = 0;
     }
 
-    Texture& operator=(Texture&& other) noexcept {
+    Texture& operator=(Texture&& other) noexcept
+    {
         texture = other.texture;
         other.texture = 0;
         return *this;
     }
 
-    void bind() const {
+    void bind() const
+    {
         glBindTexture(target, texture);
     }
 
-    static void unbind() {
+    static void unbind()
+    {
         glBindTexture(target, 0);
     }
 
-    static void generateMipmap() {
+    static void generateMipmap()
+    {
         glGenerateMipmap(target);
     }
 
-    static void setFiltering(GLint minFilter, GLint magFilter) {
+    static void setFiltering(GLint minFilter, GLint magFilter)
+    {
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilter);
     }
 
-    static void setWrapping(GLint sWrap, GLint tWrap) {
+    static void setWrapping(GLint sWrap, GLint tWrap)
+    {
         glTexParameteri(target, GL_TEXTURE_WRAP_S, sWrap);
         glTexParameteri(target, GL_TEXTURE_WRAP_T, tWrap);
     }

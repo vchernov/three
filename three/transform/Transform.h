@@ -2,9 +2,11 @@
 
 #include <glm/glm.hpp>
 
-namespace three {
+namespace three
+{
 
-class Transform {
+class Transform
+{
 public:
     virtual ~Transform() = default;
 

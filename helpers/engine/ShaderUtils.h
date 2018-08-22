@@ -1,10 +1,16 @@
-﻿#pragma once
+#pragma once
 
 #include "../../three/shader/ShaderProgram.h"
 
-class ShaderUtils {
+class ShaderUtils
+{
 public:
-    static void loadShaderProgram(three::ShaderProgram* program, const std::string& vertFileName, const std::string& fragFileName);
+    static void loadShaderProgram(
+        three::ShaderProgram* program,
+        const std::string& vertFileName,
+        const std::string& fragFileName);
 
-    static three::ShaderProgram loadShaderProgram(const std::string& vertFileName, const std::string& fragFileName);
+    static three::ShaderProgram loadShaderProgram(
+        const std::string& vertFileName,
+        const std::string& fragFileName);
 };

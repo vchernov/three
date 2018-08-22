@@ -2,7 +2,8 @@
 
 #include <string>
 
-class FileSystem {
+class FileSystem
+{
 public:
     static std::string readFile(const std::string& fn);
 };

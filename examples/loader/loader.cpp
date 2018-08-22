@@ -26,12 +26,14 @@
 
 using namespace three;
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
     std::string modelFn;
-    if (argc > 1) {
+    if (argc > 1)
+    {
         modelFn = argv[1];
     }
 
@@ -77,9 +79,13 @@ int main(int argc, char** argv) {
     std::vector<Model> models;
     BoundingBox sceneBounds;
 
-    std::future<std::vector<ModelLoader::Geometry>> loadResult = std::async(std::launch::async, &ModelLoader::loadGeometry, modelFn);
+    std::future<std::vector<ModelLoader::ModelGeometry>> loadResult = std::async(
+        std::launch::async,
+        &ModelLoader::loadGeometry,
+        modelFn);
 
-    while (wnd->isRunning()) {
+    while (wnd->isRunning())
+    {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,16 +100,19 @@ int main(int argc, char** argv) {
         UniformBuffer::upload(sizeof(glm::vec3), sizeof(glm::vec3), glm::value_ptr(lightPos));
         UniformBuffer::unbind();
 
-        for (auto& model : models) {
+        for (auto& model : models)
+        {
             model.draw();
         }
 
         wnd->swapBuffers();
 
-        if (loadResult.valid() && loadResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-            std::vector<ModelLoader::Geometry> geo = loadResult.get();
+        if (loadResult.valid() && loadResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        {
+            std::vector<ModelLoader::ModelGeometry> geo = loadResult.get();
 
-            for (auto& g : geo) {
+            for (auto& g : geo)
+            {
                 Model model;
                 SubMesh submesh(MeshBuilder::build(g), program);
                 submesh.bounds = BoundingBox::calculate(g.vertices);

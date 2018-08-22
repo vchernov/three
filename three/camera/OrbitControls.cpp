@@ -6,9 +6,11 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/polar_coordinates.hpp>
 
-namespace three {
+namespace three
+{
 
-glm::mat4 OrbitControls::getViewMatrix() const {
+glm::mat4 OrbitControls::getViewMatrix() const
+{
     glm::vec3 offset = glm::euclidean(rotation) * radius;
 
     glm::vec3 forward = -offset;
@@ -20,11 +22,13 @@ glm::mat4 OrbitControls::getViewMatrix() const {
     return glm::lookAt(eye, center, up);
 }
 
-glm::vec3 OrbitControls::getEyePosition() const {
+glm::vec3 OrbitControls::getEyePosition() const
+{
     return center + glm::euclidean(rotation) * radius;
 }
 
-void OrbitControls::yaw(float angle) {
+void OrbitControls::yaw(float angle)
+{
     rotation.x += glm::radians(angle) * rotationSpeed;
 
     const auto rotMin = -glm::half_pi<float>() + glm::epsilon<float>();
@@ -33,18 +37,22 @@ void OrbitControls::yaw(float angle) {
     rotation.x = glm::clamp(rotation.x, rotMin, rotMax);
 }
 
-void OrbitControls::pitch(float angle) {
+void OrbitControls::pitch(float angle)
+{
     rotation.y -= glm::radians(angle) * rotationSpeed;
 }
 
-void OrbitControls::zoom(float amount) {
+void OrbitControls::zoom(float amount)
+{
     radius -= amount * zoomSpeed;
-    if (radius < minRadius) {
+    if (radius < minRadius)
+    {
         radius = minRadius;
     }
 }
 
-void OrbitControls::move(float x, float y) {
+void OrbitControls::move(float x, float y)
+{
     glm::vec3 offset = glm::euclidean(rotation) * radius;
 
     glm::vec3 forward = -offset;
@@ -55,27 +63,33 @@ void OrbitControls::move(float x, float y) {
     center += glm::normalize(up) * y * moveSpeed;
 }
 
-void OrbitControls::setRotationSpeed(float rotationSpeed) {
+void OrbitControls::setRotationSpeed(float rotationSpeed)
+{
     this->rotationSpeed = rotationSpeed;
 }
 
-void OrbitControls::setZoomSpeed(float zoomSpeed) {
+void OrbitControls::setZoomSpeed(float zoomSpeed)
+{
     this->zoomSpeed = zoomSpeed;
 }
 
-void OrbitControls::setMoveSpeed(float moveSpeed) {
+void OrbitControls::setMoveSpeed(float moveSpeed)
+{
     this->moveSpeed = moveSpeed;
 }
 
-void OrbitControls::setRadius(float radius) {
+void OrbitControls::setRadius(float radius)
+{
     this->radius = radius;
 }
 
-void OrbitControls::setMinRadius(float minRadius) {
+void OrbitControls::setMinRadius(float minRadius)
+{
     this->minRadius = minRadius;
 }
 
-void OrbitControls::setPosition(const glm::vec3& position) {
+void OrbitControls::setPosition(const glm::vec3& position)
+{
     center = position;
 }
 

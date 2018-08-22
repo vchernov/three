@@ -1,12 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include "VertexAttribute.h"
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
-class VertexArrayObject {
+class VertexArrayObject
+{
 public:
     VertexArrayObject();
     virtual ~VertexArrayObject();

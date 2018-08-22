@@ -4,7 +4,8 @@
 
 #include <glm/glm.hpp>
 
-struct BoundingBox final {
+struct BoundingBox final
+{
     glm::vec3 pointFrontBottomLeft;
     glm::vec3 pointBackTopRight;
 
@@ -15,9 +16,11 @@ struct BoundingBox final {
     void encapsulate(const BoundingBox& other);
 
     template<typename VertexType>
-    static BoundingBox calculate(const std::vector<VertexType>& vertices) {
+    static BoundingBox calculate(const std::vector<VertexType>& vertices)
+    {
         BoundingBox bounds;
-        for (const auto& vertex : vertices) {
+        for (const auto& vertex : vertices)
+        {
             bounds.encapsulate(vertex.position);
         }
         return bounds;

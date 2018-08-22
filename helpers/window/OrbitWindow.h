@@ -3,11 +3,16 @@
 #include <memory>
 
 #include "Window.h"
+
 #include "../../three/camera/OrbitControls.h"
 
-class OrbitWindow : public Window {
+class OrbitWindow : public Window
+{
 public:
-    OrbitWindow(const std::string& title, int width, int height,
+    OrbitWindow(
+        const std::string& title,
+        int width,
+        int height,
         std::shared_ptr<three::OrbitControls> controls);
 
 protected:

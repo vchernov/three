@@ -1,4 +1,4 @@
-﻿#include "Window.h"
+#include "Window.h"
 
 #include <stdexcept>
 #include <cassert>
@@ -7,7 +7,8 @@
 Window::Window(const std::string& title, int width, int height)
     :
     width(width),
-    height(height) {
+    height(height)
+{
     glfwSetErrorCallback(errorCallback);
     glfwInit();
 
@@ -19,7 +20,8 @@ Window::Window(const std::string& title, int width, int height)
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    if (window == nullptr) {
+    if (window == nullptr)
+    {
         throw std::runtime_error("Window creation failed");
     }
 
@@ -27,7 +29,8 @@ Window::Window(const std::string& title, int width, int height)
 
     glewExperimental = GL_TRUE;
     auto glewInitResult = glewInit();
-    if (glewInitResult != GLEW_NO_ERROR) {
+    if (glewInitResult != GLEW_NO_ERROR)
+    {
         std::cerr << glewGetErrorString(glewInitResult) << std::endl;
         throw std::runtime_error("GLEW initialization failed");
     }
@@ -52,67 +55,83 @@ Window::Window(const std::string& title, int width, int height)
     assert(glGetError() == GL_NO_ERROR);
 }
 
-Window::~Window() {
+Window::~Window()
+{
     glfwDestroyWindow(window);
 
     glfwTerminate();
 }
 
-bool Window::isRunning() const {
+bool Window::isRunning() const
+{
     return !glfwWindowShouldClose(window);
 }
 
-void Window::processEvents() {
+void Window::processEvents()
+{
     glfwPollEvents();
 }
 
-void Window::swapBuffers() {
+void Window::swapBuffers()
+{
     glfwSwapBuffers(window);
 }
 
-int Window::getWidth() const {
+int Window::getWidth() const
+{
     return width;
 }
 
-int Window::getHeight() const {
+int Window::getHeight() const
+{
     return height;
 }
 
-void Window::handleKey(int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
+void Window::handleKey(int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
+    {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
 }
 
-void Window::handleMouseButton(int button, int action, int mods) {
+void Window::handleMouseButton(int button, int action, int mods)
+{
 }
 
-void Window::handleScroll(double xoffset, double yoffset) {
+void Window::handleScroll(double xoffset, double yoffset)
+{
 }
 
-void Window::errorCallback(int error, const char* description) {
+void Window::errorCallback(int error, const char* description)
+{
     std::cerr << description << std::endl;
 }
 
-void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
     Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
     app->handleKey(key, scancode, action, mods);
 }
 
-void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
     Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
     app->handleMouseButton(button, action, mods);
 }
 
-void Window::handleCursorPosition(double xpos, double ypos) {
+void Window::handleCursorPosition(double xpos, double ypos)
+{
 }
 
-void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
     Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
     app->handleScroll(xoffset, yoffset);
 }
 
-void Window::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+void Window::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+{
     Window* app = static_cast<Window*>(glfwGetWindowUserPointer(window));
     app->handleCursorPosition(xpos, ypos);
 }

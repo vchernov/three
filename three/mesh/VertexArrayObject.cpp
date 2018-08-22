@@ -1,47 +1,58 @@
-﻿#include "VertexArrayObject.h"
+#include "VertexArrayObject.h"
 
 #include <cassert>
 
-namespace three {
+namespace three
+{
 
-VertexArrayObject::VertexArrayObject() {
+VertexArrayObject::VertexArrayObject()
+{
     glGenVertexArrays(1, &vao);
 }
 
-VertexArrayObject::~VertexArrayObject() {
+VertexArrayObject::~VertexArrayObject()
+{
     glDeleteVertexArrays(1, &vao);
 }
 
 VertexArrayObject::VertexArrayObject(VertexArrayObject&& other) noexcept
-    : vao(other.vao) {
+    :
+    vao(other.vao)
+{
     other.vao = 0;
 }
 
-VertexArrayObject& VertexArrayObject::operator=(VertexArrayObject&& other) noexcept {
+VertexArrayObject& VertexArrayObject::operator=(VertexArrayObject&& other) noexcept
+{
     vao = other.vao;
     other.vao = 0;
     return *this;
 }
 
-void VertexArrayObject::bind() const {
+void VertexArrayObject::bind() const
+{
     glBindVertexArray(vao);
 }
 
-void VertexArrayObject::unbind() {
+void VertexArrayObject::unbind()
+{
     glBindVertexArray(0);
 }
 
-void VertexArrayObject::enableAttribute(GLuint index) {
+void VertexArrayObject::enableAttribute(GLuint index)
+{
     glEnableVertexAttribArray(index);
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void VertexArrayObject::disableAttribute(GLuint index) {
+void VertexArrayObject::disableAttribute(GLuint index)
+{
     glDisableVertexAttribArray(index);
     assert(glGetError() == GL_NO_ERROR);
 }
 
-void VertexArrayObject::registerAttribute(const VertexAttribute& attribute) {
+void VertexArrayObject::registerAttribute(const VertexAttribute& attribute)
+{
     glVertexAttribPointer(
         attribute.location,
         attribute.componentCount,

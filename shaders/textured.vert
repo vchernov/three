@@ -7,11 +7,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out VertexData {
+out VertexData
+{
     vec2 texCoord;
-} o;
+} vertOut;
 
-void main() {
+void main()
+{
     gl_Position = projection * view * model * vec4(position, 1.0);
-    o.texCoord = texCoord;
+    vertOut.texCoord = texCoord;
 }

@@ -1,0 +1,27 @@
+add_library(engine
+    Vertex.h
+    Face3.h
+    AttributeLocation.h
+    Geometry.h
+    GeometryBuffer.h
+    Model.h
+    Model.cpp
+    MeshBuilder.h
+    MeshBuilder.cpp
+    ShaderUtils.h
+    ShaderUtils.cpp
+    FileSystem.h
+    FileSystem.cpp
+    SubMesh.h
+    SubMesh.cpp
+    UniformName.h
+    UniformName.cpp
+    UniformBlockName.h
+    UniformBlockName.cpp
+    BoundingBox.h
+    BoundingBox.cpp
+)
+
+target_link_libraries(engine
+    PUBLIC three
+)

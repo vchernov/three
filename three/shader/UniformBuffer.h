@@ -2,9 +2,11 @@
 
 #include "../BufferObject.h"
 
-namespace three {
+namespace three
+{
 
-class UniformBuffer : public BufferObject<GL_UNIFORM_BUFFER> {
+class UniformBuffer : public BufferObject<GL_UNIFORM_BUFFER>
+{
 public:
     UniformBuffer();
 

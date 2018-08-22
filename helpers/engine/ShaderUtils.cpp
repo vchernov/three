@@ -1,4 +1,4 @@
-﻿#include "ShaderUtils.h"
+#include "ShaderUtils.h"
 
 #include <iostream>
 #include <cassert>
@@ -7,7 +7,11 @@
 
 #include "../../three/shader/Shader.h"
 
-void ShaderUtils::loadShaderProgram(three::ShaderProgram* program, const std::string& vertFileName, const std::string& fragFileName) {
+void ShaderUtils::loadShaderProgram(
+    three::ShaderProgram* program,
+    const std::string& vertFileName,
+    const std::string& fragFileName)
+{
     assert(program != nullptr);
 
     three::VertexShader vert(FileSystem::readFile(vertFileName));
@@ -19,10 +23,16 @@ void ShaderUtils::loadShaderProgram(three::ShaderProgram* program, const std::st
     program->attachShader(vert);
     program->attachShader(frag);
     program->link();
-    std::cout << vertFileName << " + " << fragFileName << " = " << program->getLinkStatus() << " " << program->getInfoLog() << std::endl;
+
+    std::cout << vertFileName << " + " << fragFileName << " = " << program->getLinkStatus();
+    std::cout << " " << program->getInfoLog();
+    std::cout << std::endl;
 }
 
-three::ShaderProgram ShaderUtils::loadShaderProgram(const std::string& vertFileName, const std::string& fragFileName) {
+three::ShaderProgram ShaderUtils::loadShaderProgram(
+    const std::string& vertFileName,
+    const std::string& fragFileName)
+{
     three::ShaderProgram program;
     loadShaderProgram(&program, vertFileName, fragFileName);
     return program;

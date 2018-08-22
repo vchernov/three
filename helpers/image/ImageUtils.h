@@ -1,11 +1,12 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 
 #include "../../three/texture/Image.h"
 #include "../../three/texture/Texture2D.h"
 
-class ImageUtils {
+class ImageUtils
+{
 public:
     static three::Image<uint8_t> loadImage(const std::string& fn);
 

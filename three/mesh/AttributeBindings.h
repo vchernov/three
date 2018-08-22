@@ -4,9 +4,11 @@
 
 #include "VertexAttribute.h"
 
-namespace three {
+namespace three
+{
 
-struct AttributeBindings {
+struct AttributeBindings
+{
     std::vector<VertexAttribute> attributes;
 };
 

@@ -7,7 +7,8 @@
 
 #include "BoundingBox.h"
 
-struct SubMesh final {
+struct SubMesh final
+{
     three::Mesh mesh;
     BoundingBox bounds;
     std::shared_ptr<three::SmartShaderProgram> shader;

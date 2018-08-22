@@ -1,4 +1,4 @@
-﻿#include "ImageUtils.h"
+#include "ImageUtils.h"
 
 #include <iostream>
 
@@ -7,38 +7,42 @@
 
 using namespace three;
 
-Image<uint8_t> ImageUtils::loadImage(const std::string& fn) {
+Image<uint8_t> ImageUtils::loadImage(const std::string& fn)
+{
     stbi_set_flip_vertically_on_load(1);
 
     int width, height, numChannels;
     uint8_t* pixels = stbi_load(fn.c_str(), &width, &height, &numChannels, STBI_default);
-    if (pixels == nullptr) {
+    if (pixels == nullptr)
+    {
         std::cerr << "Could not load image from file: " << fn << std::endl;
         throw std::runtime_error("Image loading failed");
     }
 
     unsigned int format;
-    switch (numChannels) {
-        case STBI_grey:
-            format = GL_LUMINANCE;
-            break;
-        case STBI_grey_alpha:
-            format = GL_LUMINANCE_ALPHA;
-            break;
-        case STBI_rgb:
-            format = GL_RGB;
-            break;
-        case STBI_rgb_alpha:
-            format = GL_RGBA;
-            break;
-        default:
-            throw std::runtime_error("Unsupported image format");
+    switch (numChannels)
+    {
+    case STBI_grey:
+        format = GL_LUMINANCE;
+        break;
+    case STBI_grey_alpha:
+        format = GL_LUMINANCE_ALPHA;
+        break;
+    case STBI_rgb:
+        format = GL_RGB;
+        break;
+    case STBI_rgb_alpha:
+        format = GL_RGBA;
+        break;
+    default:
+        throw std::runtime_error("Unsupported image format");
     }
 
     return Image<uint8_t>(pixels, width, height, numChannels, format);
 }
 
-Texture2D ImageUtils::loadTexture(const std::string& fn, int internalFormat) {
+Texture2D ImageUtils::loadTexture(const std::string& fn, int internalFormat)
+{
     auto img = loadImage(fn);
     Texture2D tex;
     tex.bind();

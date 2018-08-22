@@ -26,7 +26,8 @@ using namespace three;
 
 using MyGeometry = Geometry<VertexPositionTexture, Face3>;
 
-MyGeometry createPlane(float s) {
+MyGeometry createPlane(float s)
+{
     MyGeometry geo;
     geo.primitiveType = GL_TRIANGLES;
 
@@ -41,17 +42,23 @@ MyGeometry createPlane(float s) {
     return geo;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
     std::string imgFn;
-    if (argc > 1) {
+    if (argc > 1)
+    {
         imgFn = argv[1];
     }
 
     auto wnd = WindowFactory::createWindow("Texturing Example", 1024, 768);
-    auto camera = std::make_unique<OrthographicCamera>(static_cast<float>(wnd->getWidth()), static_cast<float>(wnd->getHeight()), 0.1f, 10.0f);
+    auto camera = std::make_unique<OrthographicCamera>(
+        static_cast<float>(wnd->getWidth()),
+        static_cast<float>(wnd->getHeight()),
+        0.1f,
+        10.0f);
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
@@ -70,9 +77,12 @@ int main(int argc, char** argv) {
 
     Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::modelMatrix), transform);
     Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::viewMatrix), glm::mat4(1.0f));
-    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4>::update(
+        program.getUniformLocation(UniformName::projectionMatrix),
+        camera->getProjectionMatrix());
 
-    while (wnd->isRunning()) {
+    while (wnd->isRunning())
+    {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT);

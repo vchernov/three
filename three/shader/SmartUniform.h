@@ -1,49 +1,51 @@
 #pragma once
 
 #include "Uniform.h"
+#include "IDeferredUniform.h"
+#include "ManageableShaderProgram.h"
 
 #include <memory>
 
-namespace three {
-
-class SmartShaderProgram;
-
-class IDeferredUniform {
-public:
-    virtual ~IDeferredUniform() = default;
-
-    virtual void apply() = 0;
-};
+namespace three
+{
 
 template<typename T>
-class SmartUniform : public Uniform<T>, public IDeferredUniform {
+class SmartUniform : public Uniform<T>, public IDeferredUniform
+{
 public:
-    SmartUniform(int location, std::weak_ptr<SmartShaderProgram> owner)
+    SmartUniform(int location, std::weak_ptr<ManageableShaderProgram> owner)
         :
-        Uniform(location),
-        owner(std::move(owner)) {
+        Uniform<T>(location),
+        owner(std::move(owner))
+    {
     }
 
-    void set(T value) override {
+    void set(T value)
+    {
         this->value = value;
 
         auto program = owner.lock();
-        if (!program) {
+        if (!program)
+        {
             throw std::runtime_error("Program destroyed");
         }
 
-        if (program->isActive()) {
+        if (program->isActive())
+        {
             Uniform<T>::set(value);
         }
     }
 
-    void apply() override {
+    void apply() override
+    {
         auto program = owner.lock();
-        if (!program) {
+        if (!program)
+        {
             throw std::runtime_error("Program destroyed");
         }
 
-        if (!program->isActive()) {
+        if (!program->isActive())
+        {
             throw std::runtime_error("Owner program is not current");
         }
 
@@ -52,7 +54,7 @@ public:
 
 private:
     T value;
-    std::weak_ptr<SmartShaderProgram> owner;
+    std::weak_ptr<ManageableShaderProgram> owner;
 };
 
 }

@@ -1,6 +1,7 @@
-﻿#include "TypeInfo.h"
+#include "TypeInfo.h"
 
-namespace three {
+namespace three
+{
 
 template<>
 const GLenum TypeInfo<float>::dataType = GL_FLOAT;

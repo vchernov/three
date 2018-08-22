@@ -4,7 +4,8 @@
 
 #include "../../three/mesh/Mesh.h"
 
-class Shape {
+class Shape
+{
 public:
     static three::Mesh createTriangle();
 

@@ -2,22 +2,27 @@
 
 #include <stdexcept>
 
-namespace three {
+namespace three
+{
 
 template<typename T>
-class Uniform {
+class Uniform
+{
 public:
     explicit Uniform(int location)
         :
-        location(location) {
-        if (location < 0) {
+        location(location)
+    {
+        if (location < 0)
+        {
             throw std::runtime_error("Invalid uniform location");
         }
     }
 
     virtual ~Uniform() = default;
 
-    virtual void set(T value) {
+    virtual void set(T value)
+    {
         update(location, value);
     }
 

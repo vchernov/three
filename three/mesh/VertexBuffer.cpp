@@ -1,8 +1,10 @@
 #include "VertexBuffer.h"
 
-namespace three {
+namespace three
+{
 
-void VertexBuffer::draw(GLenum primitiveType, int first, int count) {
+void VertexBuffer::draw(GLenum primitiveType, int first, int count)
+{
     glDrawArrays(primitiveType, first, count);
 }
 

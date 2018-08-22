@@ -2,9 +2,11 @@
 
 #include "Camera.h"
 
-namespace three {
+namespace three
+{
 
-class PerspectiveCamera : public Camera {
+class PerspectiveCamera : public Camera
+{
 public:
     PerspectiveCamera(float fieldOfView, float aspect, float near, float far);
 

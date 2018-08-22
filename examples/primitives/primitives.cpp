@@ -13,15 +13,19 @@
 
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/Shape.h"
+
+#include "../../helpers/shape/Shape.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
 using namespace three;
 
-struct Model {
-    explicit Model(Mesh mesh)
-        : mesh(std::move(mesh)) {
+struct SimpleModel
+{
+    explicit SimpleModel(Mesh mesh)
+        :
+        mesh(std::move(mesh))
+    {
     }
 
     Mesh mesh;
@@ -29,7 +33,8 @@ struct Model {
     glm::vec3 color;
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
@@ -51,20 +56,27 @@ int main(int argc, char** argv) {
     program.use();
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
-    Uniform<glm::mat4>::update(program.getUniformLocation(UniformName::projectionMatrix), camera->getProjectionMatrix());
+    Uniform<glm::mat4>::update(
+        program.getUniformLocation(UniformName::projectionMatrix),
+        camera->getProjectionMatrix());
     Uniform<glm::mat4> viewMatUniform(program.getUniformLocation(UniformName::viewMatrix));
     Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
-    std::vector<Model> models;
-    
+    std::vector<SimpleModel> models;
+
     {
-        Model model(Shape::createGrid(glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f), 8, 8));
+        SimpleModel model(Shape::createGrid(
+            glm::vec3(-1.0f, 0.0f, 1.0f),
+            glm::vec3(1.0f, 0.0f, 1.0f),
+            glm::vec3(-1.0f, 0.0f, -1.0f),
+            8,
+            8));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
         models.push_back(std::move(model));
     }
 
     {
-        Model model(Shape::createCube());
+        SimpleModel model(Shape::createCube());
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, 0.0f, -0.25f);
@@ -72,7 +84,7 @@ int main(int argc, char** argv) {
     }
 
     {
-        Model model(Shape::createSphere(32, 32));
+        SimpleModel model(Shape::createSphere(32, 32));
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.25f, 0.25f);
@@ -81,14 +93,16 @@ int main(int argc, char** argv) {
 
     Uniform<glm::vec3> colorUniform(program.getUniformLocation("color"));
 
-    while (wnd->isRunning()) {
+    while (wnd->isRunning())
+    {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         viewMatUniform.set(controls->getViewMatrix());
 
-        for (const auto& model : models) {
+        for (const auto& model : models)
+        {
             colorUniform.set(model.color);
             modelMatUniform.set(model.transform.getTransformationMatrix());
             model.mesh.draw();

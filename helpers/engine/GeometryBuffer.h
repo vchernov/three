@@ -8,7 +8,8 @@
 #include "../../three/mesh/VertexAttribute.h"
 #include "../../three/mesh/IndexBuffer.h"
 
-struct GeometryBuffer {
+struct GeometryBuffer
+{
     three::VertexBuffer vertexBuffer;
     std::vector<three::VertexAttribute> attributes;
     three::IndexBuffer indexBuffer;

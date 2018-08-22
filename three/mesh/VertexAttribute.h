@@ -1,12 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
 struct AttributeInfo;
 
-struct VertexAttribute {
+struct VertexAttribute
+{
     VertexAttribute(
         GLuint location,
         GLenum dataType,

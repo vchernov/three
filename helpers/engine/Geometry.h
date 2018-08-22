@@ -5,7 +5,8 @@
 #include <GL/glew.h>
 
 template<typename VertexType, typename FaceType>
-struct Geometry {
+struct Geometry
+{
     using Vertex = VertexType;
     using Face = FaceType;
 

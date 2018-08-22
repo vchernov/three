@@ -2,9 +2,11 @@
 
 #include "ShaderProgram.h"
 
-namespace three {
+namespace three
+{
 
-class ShaderManager {
+class ShaderManager
+{
 public:
     virtual ~ShaderManager() = default;
 

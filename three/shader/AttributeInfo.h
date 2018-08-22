@@ -4,9 +4,11 @@
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
-struct AttributeInfo {
+struct AttributeInfo
+{
     std::string name;
     GLenum dataType;
     int location = -1;

@@ -7,10 +7,12 @@
 #include "Geometry.h"
 #include "BoundingBox.h"
 
-class MeshBuilder {
+class MeshBuilder
+{
 public:
     template<typename VertexType, typename FaceType>
-    static three::Mesh build(const Geometry<VertexType, FaceType>& geometry) {
+    static three::Mesh build(const Geometry<VertexType, FaceType>& geometry)
+    {
         three::VertexBuffer vertexBuffer;
         vertexBuffer.bind();
         three::VertexBuffer::allocate(geometry.vertices);
@@ -19,7 +21,11 @@ public:
         indexBuffer.bind();
         uploadFaces<FaceType>(indexBuffer, geometry.faces);
 
-        return three::Mesh::create(vertexBuffer, getAttributes<VertexType>(), std::move(indexBuffer), geometry.primitiveType);
+        return three::Mesh::create(
+            vertexBuffer,
+            getAttributes<VertexType>(),
+            std::move(indexBuffer),
+            geometry.primitiveType);
     }
 
 private:
@@ -27,7 +33,12 @@ private:
     static three::AttributeBindings getAttributes();
 
     template<typename FaceType>
-    static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces) {
-        indexBuffer.allocate(three::TypeInfo<typename FaceType::ValueType>::dataType, sizeof(FaceType::ValueType), FaceType::getIndexCount() * faces.size(), faces.data());
+    static void uploadFaces(three::IndexBuffer& indexBuffer, const std::vector<FaceType>& faces)
+    {
+        indexBuffer.allocate(
+            three::TypeInfo<typename FaceType::ValueType>::dataType,
+            sizeof(typename FaceType::ValueType),
+            FaceType::getIndexCount() * faces.size(),
+            faces.data());
     }
 };

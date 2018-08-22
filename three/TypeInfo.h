@@ -1,11 +1,13 @@
-﻿#pragma once
+#pragma once
 
 #include <GL/glew.h>
 
-namespace three {
+namespace three
+{
 
 template<typename T>
-struct TypeInfo {
+struct TypeInfo
+{
     static const GLenum dataType;
 };
 

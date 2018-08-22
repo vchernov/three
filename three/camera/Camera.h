@@ -2,9 +2,11 @@
 
 #include <glm/glm.hpp>
 
-namespace three {
+namespace three
+{
 
-class Camera {
+class Camera
+{
 public:
     virtual ~Camera() = default;
 

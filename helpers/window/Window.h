@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 
@@ -7,7 +7,8 @@
 
 #include "IWindow.h"
 
-class Window : public IWindow {
+class Window : public IWindow
+{
 public:
     Window(const std::string& title, int width, int height);
     ~Window() override;

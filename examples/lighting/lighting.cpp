@@ -18,22 +18,25 @@
 #include "../../three/shader/SmartUniform.h"
 
 #include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/Shape.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/UniformBlockName.h"
 #include "../../helpers/engine/AttributeLocation.h"
+
+#include "../../helpers/shape/Shape.h"
 
 #include "../../helpers/window/WindowFactory.h"
 #include "../../helpers/window/Time.h"
 
 using namespace three;
 
-struct Model {
+struct SimpleModel
+{
 public:
-    Model(Mesh mesh, std::shared_ptr<SmartShaderProgram> program)
+    SimpleModel(Mesh mesh, std::shared_ptr<SmartShaderProgram> program)
         :
         mesh(std::move(mesh)),
-        program(std::move(program)) {
+        program(std::move(program))
+    {
     }
 
     Mesh mesh;
@@ -42,9 +45,11 @@ public:
     glm::vec3 color;
 };
 
-class PointLight {
+class PointLight
+{
 public:
-    explicit PointLight(std::shared_ptr<ShaderManager> shaderManager) {
+    explicit PointLight(std::shared_ptr<ShaderManager> shaderManager)
+    {
         program = std::make_shared<SmartShaderProgram>(shaderManager);
         ShaderUtils::loadShaderProgram(program.get(), "shaders/lamp.vert", "shaders/lamp.frag");
 
@@ -59,13 +64,18 @@ public:
         vb.bind();
         VertexBuffer::allocate(points);
 
-        vao.registerAttribute(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::position), 3, 0, sizeof(glm::vec3)));
+        vao.registerAttribute(VertexAttribute::create<float>(
+            static_cast<int>(AttributeLocation::position),
+            3,
+            0,
+            sizeof(glm::vec3)));
         vao.enableAttribute(static_cast<int>(AttributeLocation::position));
 
         VertexArrayObject::unbind();
     }
 
-    void draw() const {
+    void draw() const
+    {
         program->use();
         modelMatrixUniform.lock()->set(getTransformationMatrix());
         lightColorUniform.lock()->set(lightColor);
@@ -74,7 +84,8 @@ public:
         VertexArrayObject::unbind();
     }
 
-    glm::mat4 getTransformationMatrix() const {
+    glm::mat4 getTransformationMatrix() const
+    {
         glm::mat4 transform = glm::mat4(1.0f);
         return glm::translate(transform, position);
     }
@@ -89,7 +100,8 @@ private:
     std::weak_ptr<SmartUniform<glm::mat4>> modelMatrixUniform;
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
@@ -116,18 +128,18 @@ int main(int argc, char** argv) {
     PointLight light(shaderManager);
     light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    std::vector<Model> models;
-    
+    std::vector<SimpleModel> models;
+
     {
-        Model model(Shape::createCube(), program);
+        SimpleModel model(Shape::createCube(), program);
         model.color = glm::vec3(1.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(0.5f, -0.15f, -0.25f);
         models.push_back(std::move(model));
     }
-    
+
     {
-        Model model(Shape::createSphere(32, 32), program);
+        SimpleModel model(Shape::createSphere(32, 32), program);
         model.color = glm::vec3(0.0f, 1.0f, 0.0f);
         model.transform.scale = glm::vec3(0.25f, 0.25f, 0.25f);
         model.transform.position = glm::vec3(-0.25f, 0.0f, 0.25f);
@@ -152,7 +164,8 @@ int main(int argc, char** argv) {
     Uniform<glm::vec3> viewPosUniform(program->getUniformLocation("viewPos"));
     Uniform<glm::mat4> modelMatrixUniform(program->getUniformLocation(UniformName::modelMatrix));
 
-    while (wnd->isRunning()) {
+    while (wnd->isRunning())
+    {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,7 +187,8 @@ int main(int argc, char** argv) {
 
         light.draw(); // gizmos
 
-        for (const auto& model : models) {
+        for (const auto& model : models)
+        {
             model.program->use();
             colorUniform.set(model.color);
             lightColorUniform.set(light.lightColor);

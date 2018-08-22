@@ -2,8 +2,8 @@
 
 #include <array>
 
-#include "Face3.h"
-#include "AttributeLocation.h"
+#include "../engine/Face3.h"
+#include "../engine/AttributeLocation.h"
 
 #include "../../three/TypeInfo.h"
 #include "../../three/mesh/AttributeBindings.h"
@@ -21,7 +21,8 @@
 
 using namespace three;
 
-Mesh Shape::createTriangle() {
+Mesh Shape::createTriangle()
+{
     const float offset = 0.5f;
     std::array<glm::vec3, 3> vertices = {
         glm::vec3(-offset, -offset, 0.0f),
@@ -39,17 +40,23 @@ Mesh Shape::createTriangle() {
     VertexBuffer::unbind();
 
     AttributeBindings bindings;
-    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::position), 0, sizeof(glm::vec3)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::position), 0, sizeof(glm::vec3)));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
-    indexBuffer.allocate(TypeInfo<Face3::ValueType>::dataType, sizeof(Face3::ValueType), Face3::getIndexCount() * faces.size(), faces.data());
+    indexBuffer.allocate(
+        TypeInfo<Face3::ValueType>::dataType,
+        sizeof(Face3::ValueType),
+        Face3::getIndexCount() * faces.size(),
+        faces.data());
     IndexBuffer::unbind();
 
     return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
-Mesh Shape::createCube() {
+Mesh Shape::createCube()
+{
     auto v1 = glm::vec3(-0.5f, -0.5f, 0.5f);
     auto v2 = glm::vec3(0.5f, -0.5f, 0.5f);
     auto v3 = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -92,18 +99,29 @@ Mesh Shape::createCube() {
     VertexBuffer::unbind();
 
     AttributeBindings bindings;
-    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::position), 0, sizeof(glm::vec3) + sizeof(glm::vec3)));
-    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::normal), sizeof(glm::vec3), sizeof(glm::vec3) + sizeof(glm::vec3)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::position),
+        0,
+        sizeof(glm::vec3) + sizeof(glm::vec3)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::normal),
+        sizeof(glm::vec3),
+        sizeof(glm::vec3) + sizeof(glm::vec3)));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
-    indexBuffer.allocate(TypeInfo<unsigned char>::dataType, sizeof(unsigned char), indices.size(), indices.data());
+    indexBuffer.allocate(
+        TypeInfo<unsigned char>::dataType,
+        sizeof(unsigned char),
+        indices.size(),
+        indices.data());
     IndexBuffer::unbind();
 
     return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
-Mesh Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int rows, int columns) {
+Mesh Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int rows, int columns)
+{
     glm::vec3 end1 = point1 - point0;
     glm::vec3 end2 = point2 - point0;
 
@@ -127,7 +145,8 @@ Mesh Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int
     indices.push_back(1);
     indices.push_back(3);
 
-    for (int i = 1; i < rows; i++) {
+    for (int i = 1; i < rows; i++)
+    {
         glm::vec3 vertex1 = point0 + offset2 * (float)i;
         glm::vec3 vertex2 = vertex1 + end1;
 
@@ -138,7 +157,8 @@ Mesh Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int
         indices.push_back(2 + i * 2 + 1);
     }
 
-    for (int j = 1; j < columns; j++) {
+    for (int j = 1; j < columns; j++)
+    {
         glm::vec3 vertex1 = point0 + offset1 * (float)j;
         glm::vec3 vertex2 = vertex1 + end2;
 
@@ -155,17 +175,25 @@ Mesh Shape::createGrid(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, int
     VertexBuffer::unbind();
 
     AttributeBindings bindings;
-    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(static_cast<int>(AttributeLocation::position), 0, sizeof(glm::vec3)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::position),
+        0,
+        sizeof(glm::vec3)));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
-    indexBuffer.allocate(TypeInfo<unsigned short>::dataType, sizeof(unsigned short), indices.size(), indices.data());
+    indexBuffer.allocate(
+        TypeInfo<unsigned short>::dataType,
+        sizeof(unsigned short),
+        indices.size(),
+        indices.data());
     IndexBuffer::unbind();
 
     return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_LINES);
 }
 
-Mesh Shape::createSphere(int slices, int stacks) {
+Mesh Shape::createSphere(int slices, int stacks)
+{
     par_shapes_mesh* mesh = par_shapes_create_parametric_sphere(slices, stacks);
 
     const int positionsLength = mesh->npoints * sizeof(float) * 3;
@@ -181,13 +209,29 @@ Mesh Shape::createSphere(int slices, int stacks) {
     VertexBuffer::unbind();
 
     AttributeBindings bindings;
-    bindings.attributes.push_back(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::position), 3, 0, sizeof(float) * 3));
-    bindings.attributes.push_back(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::normal), 3, positionsLength, sizeof(float) * 3));
-    bindings.attributes.push_back(VertexAttribute::create<float>(static_cast<int>(AttributeLocation::texCoord), 2, positionsLength + normalsLength, sizeof(float) * 2));
+    bindings.attributes.push_back(VertexAttribute::create<float>(
+        static_cast<int>(AttributeLocation::position),
+        3,
+        0,
+        sizeof(float) * 3));
+    bindings.attributes.push_back(VertexAttribute::create<float>(
+        static_cast<int>(AttributeLocation::normal),
+        3,
+        positionsLength,
+        sizeof(float) * 3));
+    bindings.attributes.push_back(VertexAttribute::create<float>(
+        static_cast<int>(AttributeLocation::texCoord),
+        2,
+        positionsLength + normalsLength,
+        sizeof(float) * 2));
 
     IndexBuffer indexBuffer;
     indexBuffer.bind();
-    indexBuffer.allocate(TypeInfo<PAR_SHAPES_T>::dataType, sizeof(PAR_SHAPES_T), mesh->ntriangles * 3, mesh->triangles);
+    indexBuffer.allocate(
+        TypeInfo<PAR_SHAPES_T>::dataType,
+        sizeof(PAR_SHAPES_T),
+        mesh->ntriangles * 3,
+        mesh->triangles);
     IndexBuffer::unbind();
 
     par_shapes_free_mesh(mesh);

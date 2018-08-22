@@ -9,10 +9,11 @@
 #include "../engine/Geometry.h"
 #include "../engine/Vertex.h"
 
-class ModelLoader {
+class ModelLoader
+{
 public:
     using Face = three::Face<unsigned int, 3>;
-    using Geometry = Geometry<VertexPositionNormal, Face>;
+    using ModelGeometry = Geometry<VertexPositionNormal, Face>;
 
-    static std::vector<Geometry> loadGeometry(const std::string& fn);
+    static std::vector<ModelGeometry> loadGeometry(const std::string& fn);
 };

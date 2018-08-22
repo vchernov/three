@@ -2,9 +2,11 @@
 
 #include <glm/glm.hpp>
 
-namespace three {
+namespace three
+{
 
-class OrbitControls {
+class OrbitControls
+{
 public:
     virtual ~OrbitControls() = default;
 
