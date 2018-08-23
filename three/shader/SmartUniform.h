@@ -20,7 +20,7 @@ public:
     {
     }
 
-    void set(T value)
+    void set(T value) override
     {
         this->value = value;
 

@@ -7,4 +7,5 @@ find_package(assimp REQUIRED)
 
 target_link_libraries(import
     PRIVATE assimp
+    PUBLIC engine
 )

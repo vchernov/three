@@ -14,4 +14,5 @@ find_package(glfw3 REQUIRED)
 
 target_link_libraries(window
     PRIVATE glfw
+    PUBLIC engine
 )
