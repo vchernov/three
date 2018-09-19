@@ -22,7 +22,7 @@
 
 #include "../../helpers/window/WindowFactory.h"
 
-#include "../../helpers/import/ModelLoader.h"
+#include "../../helpers/import/ModelImporter.h"
 
 using namespace three;
 
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     controls->setRotationSpeed(0.5f);
     controls->setZoomSpeed(0.2f);
     controls->setMoveSpeed(0.005f);
-    auto wnd = WindowFactory::createWindowWithOrbitCamera("Asset Loading Example", 1024, 768, controls);
+    auto wnd = WindowFactory::createWindowWithOrbitCamera("Asset Importing Example", 1024, 768, controls);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -79,9 +79,9 @@ int main(int argc, char** argv)
     std::vector<Model> models;
     BoundingBox sceneBounds;
 
-    std::future<std::vector<ModelLoader::ModelGeometry>> loadResult = std::async(
+    std::future<std::vector<ModelImporter::ModelGeometry>> loadResult = std::async(
         std::launch::async,
-        &ModelLoader::loadGeometry,
+        &ModelImporter::loadGeometry,
         modelFn);
 
     while (wnd->isRunning())
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 
         if (loadResult.valid() && loadResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
         {
-            std::vector<ModelLoader::ModelGeometry> geo = loadResult.get();
+            std::vector<ModelImporter::ModelGeometry> geo = loadResult.get();
 
             for (auto& g : geo)
             {

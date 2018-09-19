@@ -9,7 +9,7 @@
 #include "../engine/Geometry.h"
 #include "../engine/Vertex.h"
 
-class ModelLoader
+class ModelImporter
 {
 public:
     using Face = three::Face<unsigned int, 3>;

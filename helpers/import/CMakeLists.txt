@@ -1,6 +1,6 @@
 add_library(import
-    ModelLoader.h
-    ModelLoader.cpp
+    ModelImporter.h
+    ModelImporter.cpp
 )
 
 find_package(assimp REQUIRED)

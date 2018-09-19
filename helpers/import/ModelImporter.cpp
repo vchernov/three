@@ -1,4 +1,4 @@
-#include "ModelLoader.h"
+#include "ModelImporter.h"
 
 #include <iostream>
 
@@ -12,7 +12,7 @@
 
 using namespace three;
 
-std::vector<ModelLoader::ModelGeometry> ModelLoader::loadGeometry(const std::string& fn)
+std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std::string& fn)
 {
     std::vector<ModelGeometry> geometry;
 
