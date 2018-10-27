@@ -1,6 +1,6 @@
 #include "ModelLoader.h"
 
-#include <fx/gltf.h>
+#include "../../3rdparty/fx-gltf/include/fx/gltf.h"
 
 void ModelLoader::loadModel(const std::string& fn)
 {

@@ -23,5 +23,6 @@ add_library(engine
 )
 
 target_link_libraries(engine
-    PUBLIC three
+    PUBLIC
+		three
 )

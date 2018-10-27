@@ -64,11 +64,9 @@ public:
         vb.bind();
         VertexBuffer::allocate(points);
 
-        vao.registerAttribute(VertexAttribute::create<float>(
-            static_cast<int>(AttributeLocation::position),
-            3,
-            0,
-            sizeof(glm::vec3)));
+		vao.registerAttribute(VertexAttribute::create<float>(
+			static_cast<int>(AttributeLocation::position),
+			3, 0, sizeof(glm::vec3)));
         vao.enableAttribute(static_cast<int>(AttributeLocation::position));
 
         VertexArrayObject::unbind();

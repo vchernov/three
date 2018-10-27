@@ -6,10 +6,13 @@ add_library(import
 find_package(assimp REQUIRED)
 
 target_include_directories(import
-	PRIVATE ${ASSIMP_INCLUDE_DIRS}
+	PRIVATE
+		${ASSIMP_INCLUDE_DIRS}
 )
 
 target_link_libraries(import
-    PRIVATE ${ASSIMP_LIBRARIES}
-    PUBLIC engine
+    PRIVATE
+		${ASSIMP_LIBRARIES}
+    PUBLIC
+		engine
 )

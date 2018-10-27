@@ -55,10 +55,8 @@ int main(int argc, char** argv)
 
     auto wnd = WindowFactory::createWindow("Texturing Example", 1024, 768);
     auto camera = std::make_unique<OrthographicCamera>(
-        static_cast<float>(wnd->getWidth()),
-        static_cast<float>(wnd->getHeight()),
-        0.1f,
-        10.0f);
+        static_cast<float>(wnd->getWidth()), static_cast<float>(wnd->getHeight()),
+        0.1f, 10.0f);
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 

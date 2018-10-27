@@ -54,12 +54,9 @@ int main(int argc, char** argv)
     Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
     auto primitiveMesh = Shape::createTriangle();
-    auto gridMesh = Shape::createGrid(
-        glm::vec3(-1.0f, -1.0f, -0.0f),
-        glm::vec3(1.0f, -1.0f, 0.0f),
-        glm::vec3(-1.0f, 1.0f, 0.0f),
-        8,
-        8);
+	auto gridMesh = Shape::createGrid(
+		glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f),
+		8, 8);
 
     std::vector<SimpleModel> models;
 

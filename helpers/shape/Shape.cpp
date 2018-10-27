@@ -15,8 +15,9 @@
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4305)
 #pragma warning(disable: 4838)
+#pragma warning(disable: 4996)
 #define PAR_SHAPES_IMPLEMENTATION
-#include "par_shapes.h"
+#include "../../3rdparty/par/par_shapes.h"
 #pragma warning(pop)
 
 using namespace three;

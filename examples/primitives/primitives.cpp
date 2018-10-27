@@ -65,12 +65,9 @@ int main(int argc, char** argv)
     std::vector<SimpleModel> models;
 
     {
-        SimpleModel model(Shape::createGrid(
-            glm::vec3(-1.0f, 0.0f, 1.0f),
-            glm::vec3(1.0f, 0.0f, 1.0f),
-            glm::vec3(-1.0f, 0.0f, -1.0f),
-            8,
-            8));
+		SimpleModel model(Shape::createGrid(
+			glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f),
+			8, 8));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
         models.push_back(std::move(model));
     }
