@@ -23,6 +23,7 @@
 #include "../../helpers/window/WindowFactory.h"
 
 #include "../../helpers/import/ModelImporter.h"
+#include "../../helpers/import/DynamicModelImporter.h"
 
 using namespace three;
 
@@ -79,10 +80,19 @@ int main(int argc, char** argv)
     std::vector<Model> models;
     BoundingBox sceneBounds;
 
-    std::future<std::vector<ModelImporter::ModelGeometry>> loadResult = std::async(
+    /*
+    std::future<std::vector<ModelImporter::ModelGeometry>> result = std::async(
         std::launch::async,
         &ModelImporter::loadGeometry,
         modelFn);
+    //*/
+
+    //*
+    std::future<std::shared_ptr<DynamicModelImporter::IntermediateImportResult>> result = std::async(
+        std::launch::async,
+        &DynamicModelImporter::importModel,
+        modelFn);
+    //*/
 
     while (wnd->isRunning())
     {
@@ -107,23 +117,31 @@ int main(int argc, char** argv)
 
         wnd->swapBuffers();
 
-        if (loadResult.valid() && loadResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        if (result.valid() && result.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
         {
-            std::vector<ModelImporter::ModelGeometry> geo = loadResult.get();
+            Model model = DynamicModelImporter::loadModel(result.get());
 
+            /*
+            Model model;
+            std::vector<ModelImporter::ModelGeometry> geo = result.get();
             for (auto& g : geo)
             {
-                Model model;
-                SubMesh submesh(MeshBuilder::build(g), program);
+                SubMesh submesh(MeshBuilder::build(g));
                 submesh.bounds = BoundingBox::calculate(g.vertices);
+                model.meshes.push_back(std::move(submesh));
+            }
+            //*/
+
+            for (auto& submesh : model.meshes)
+            {
+                submesh.applyShader(program);
 
                 sceneBounds.encapsulate(submesh.bounds);
                 controls->setPosition(sceneBounds.getCenter());
                 controls->setRadius(glm::length(sceneBounds.getSize()));
-
-                model.meshes.push_back(std::move(submesh));
-                models.push_back(std::move(model));
             }
+
+            models.push_back(std::move(model));
         }
     }
 
