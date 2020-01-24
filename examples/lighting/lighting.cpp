@@ -17,6 +17,7 @@
 #include "../../three/shader/ShaderManager.h"
 #include "../../three/shader/SmartUniform.h"
 
+#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
 #include "../../helpers/engine/UniformBlockName.h"
@@ -103,6 +104,8 @@ int main(int argc, char** argv)
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
+    std::cout << FileSystem::getCurrentDirectory() << std::endl;
+
     auto controls = std::make_shared<OrbitControls>();
     controls->setRotationSpeed(0.5f);
     controls->setZoomSpeed(0.2f);
@@ -121,7 +124,15 @@ int main(int argc, char** argv)
 
     auto shaderManager = std::make_shared<ShaderManager>();
     auto program = std::make_shared<SmartShaderProgram>(shaderManager);
-    ShaderUtils::loadShaderProgram(program.get(), "shaders/phong.vert", "shaders/phong.frag");
+    try
+    {
+        ShaderUtils::loadShaderProgram(program.get(), "shaders/phong.vert", "shaders/phong.frag");
+    }
+    catch (FileNotFoundException& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
 
     PointLight light(shaderManager);
     light.lightColor = glm::vec3(1.0f, 1.0f, 1.0f);

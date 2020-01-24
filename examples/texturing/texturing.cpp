@@ -11,6 +11,7 @@
 #include "../../three/mesh/Mesh.h"
 #include "../../three/camera/OrthographicCamera.h"
 
+#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/Vertex.h"
 #include "../../helpers/engine/Face3.h"
 #include "../../helpers/engine/Geometry.h"
@@ -47,6 +48,8 @@ int main(int argc, char** argv)
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
+    std::cout << FileSystem::getCurrentDirectory() << std::endl;
+
     std::string imgFn;
     if (argc > 1)
     {
@@ -60,12 +63,21 @@ int main(int argc, char** argv)
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
-    auto program = ShaderUtils::loadShaderProgram("shaders/textured.vert", "shaders/textured.frag");
+    three::ShaderProgram program;
+    three::Texture2D tex;
+    try
+    {
+        program = ShaderUtils::loadShaderProgram("shaders/textured.vert", "shaders/textured.frag");
+        tex = ImageUtils::loadTexture(imgFn, GL_RGBA8);
+    }
+    catch (std::runtime_error& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
     program.use();
 
     auto mesh = MeshBuilder::build(createPlane(static_cast<float>(fmin(wnd->getWidth(), wnd->getHeight()) * 0.40f)));
-
-    auto tex = ImageUtils::loadTexture(imgFn, GL_RGBA8);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

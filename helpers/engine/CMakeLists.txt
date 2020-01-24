@@ -12,6 +12,7 @@ add_library(engine
     ShaderUtils.cpp
     FileSystem.h
     FileSystem.cpp
+	FileNotFoundException.h
     SubMesh.h
     SubMesh.cpp
     UniformName.h

@@ -10,6 +10,7 @@
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
+#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
 
@@ -31,6 +32,8 @@ int main(int argc, char** argv)
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
+	std::cout << FileSystem::getCurrentDirectory() << std::endl;
+
     auto controls = std::make_shared<OrbitControls>();
     controls->setRotationSpeed(0.5f);
     controls->setZoomSpeed(0.2f);
@@ -43,7 +46,16 @@ int main(int argc, char** argv)
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
-    auto program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
+	ShaderProgram program;
+	try
+	{
+		program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
+	}
+    catch (FileNotFoundException& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
     program.use();
 
     auto camera = std::make_unique<PerspectiveCamera>(45.0f, (float)wnd->getWidth() / wnd->getHeight(), 0.1f, 10.0f);
