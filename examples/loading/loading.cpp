@@ -4,6 +4,8 @@
 
 #include "../../helpers/window/WindowFactory.h"
 
+#include "../../helpers/load/ModelLoader.h"
+
 using namespace three;
 
 int main(int argc, char** argv)
@@ -22,6 +24,8 @@ int main(int argc, char** argv)
 	controls->setZoomSpeed(0.2f);
 	controls->setMoveSpeed(0.005f);
 	auto wnd = WindowFactory::createWindowWithOrbitCamera("glTF Loading Example", 1024, 768, controls);
+
+	ModelLoader::loadModel(modelFn);
 
 	while (wnd->isRunning())
 	{

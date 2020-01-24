@@ -21,7 +21,7 @@ public:
 
     ~AssimpIntermediateImportResult()
     {
-        for (int i = 0; i < allIndices.size(); i++)
+        for (unsigned int i = 0; i < allIndices.size(); i++)
             delete[] allIndices[i];
 
         std::cout << "Intermediate import result destroyed" << std::endl;

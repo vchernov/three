@@ -10,3 +10,4 @@ build/
 *.vcxproj
 *.vcxproj.user
 *.vcxproj.filters
+CMakeSettings.json

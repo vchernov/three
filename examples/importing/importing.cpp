@@ -14,6 +14,7 @@
 #include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
+#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/MeshBuilder.h"
 #include "../../helpers/engine/UniformName.h"
@@ -31,6 +32,8 @@ int main(int argc, char** argv)
 {
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
+
+    std::cout << FileSystem::getCurrentDirectory() << std::endl;
 
     std::string modelFn;
     if (argc > 1)
@@ -54,7 +57,15 @@ int main(int argc, char** argv)
 
     auto shaderManager = std::make_shared<ShaderManager>();
     auto program = std::make_shared<SmartShaderProgram>(shaderManager);
-    ShaderUtils::loadShaderProgram(program.get(), "shaders/default.vert", "shaders/default.frag");
+    try
+    {
+        ShaderUtils::loadShaderProgram(program.get(), "shaders/default.vert", "shaders/default.frag");
+    }
+    catch (FileNotFoundException& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
     program->use();
 
     UniformBuffer cameraUniformBuffer;
@@ -80,14 +91,14 @@ int main(int argc, char** argv)
     std::vector<Model> models;
     BoundingBox sceneBounds;
 
-    /*
+    //*
     std::future<std::vector<ModelImporter::ModelGeometry>> result = std::async(
         std::launch::async,
         &ModelImporter::loadGeometry,
         modelFn);
     //*/
 
-    //*
+    /*
     std::future<std::shared_ptr<DynamicModelImporter::IntermediateImportResult>> result = std::async(
         std::launch::async,
         &DynamicModelImporter::importModel,
@@ -119,9 +130,9 @@ int main(int argc, char** argv)
 
         if (result.valid() && result.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
         {
-            Model model = DynamicModelImporter::loadModel(result.get());
+            //Model model = DynamicModelImporter::loadModel(result.get());
 
-            /*
+            //*
             Model model;
             std::vector<ModelImporter::ModelGeometry> geo = result.get();
             for (auto& g : geo)

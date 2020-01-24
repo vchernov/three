@@ -8,6 +8,22 @@
 
 using namespace three;
 
+template<typename VertexType>
+void copyPosition(const aiVector3D& position, VertexType& vertex)
+{
+    vertex.position.x = position.x;
+    vertex.position.y = position.y;
+    vertex.position.z = position.z;
+}
+
+template<typename VertexType>
+void copyNormal(const aiVector3D& normal, VertexType& vertex)
+{
+    vertex.normal.x = normal.x;
+    vertex.normal.y = normal.y;
+    vertex.normal.z = normal.z;
+}
+
 std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std::string& fn)
 {
     std::vector<ModelGeometry> geometry;
@@ -23,6 +39,8 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
     for (unsigned int mi = 0; mi < scene->mNumMeshes; mi++)
     {
         const aiMesh* mesh = scene->mMeshes[mi];
+        std::cout << "Importing mesh " << mi << ": " << mesh->mName.C_Str() << std::endl;
+
         assert(mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
         assert(mesh->HasFaces());
         assert(mesh->HasPositions());
@@ -35,15 +53,8 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
         {
             ModelGeometry::Vertex vertex;
 
-            const aiVector3D& position = mesh->mVertices[vi];
-            vertex.position.x = position.x;
-            vertex.position.y = position.y;
-            vertex.position.z = position.z;
-
-            const aiVector3D& normal = mesh->mNormals[vi];
-            vertex.normal.x = normal.x;
-            vertex.normal.y = normal.y;
-            vertex.normal.z = normal.z;
+            copyPosition(mesh->mVertices[vi], vertex);
+            copyNormal(mesh->mNormals[vi], vertex);
 
             geo.vertices.push_back(vertex);
         }
@@ -51,8 +62,8 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
         for (unsigned int fi = 0; fi < mesh->mNumFaces; fi++)
         {
             const aiFace& aiFace = mesh->mFaces[fi];
-            assert(aiFace.mNumIndices == ModelImporter::Face::getIndexCount());
-            ModelImporter::Face face;
+            assert(aiFace.mNumIndices == IndexedTriangle::getIndexCount());
+            IndexedTriangle face;
             for (unsigned int i = 0; i < aiFace.mNumIndices; i++)
             {
                 face.indices[i] = aiFace.mIndices[i];

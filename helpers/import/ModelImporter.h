@@ -12,8 +12,8 @@
 class ModelImporter
 {
 public:
-    using Face = three::Face<unsigned int, 3>;
-    using ModelGeometry = Geometry<VertexPositionNormal, Face>;
+    using IndexedTriangle = three::Face<unsigned int, 3>;
+    using ModelGeometry = Geometry<VertexPositionNormal, IndexedTriangle>;
 
     static std::vector<ModelGeometry> loadGeometry(const std::string& fn);
 };
