@@ -47,7 +47,7 @@ add_library(three
     camera/OrbitControls.cpp
 )
 
-target_compile_features(three PUBLIC cxx_std_14)
+target_compile_features(three PUBLIC cxx_std_17)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
