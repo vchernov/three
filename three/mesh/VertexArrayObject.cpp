@@ -53,13 +53,18 @@ void VertexArrayObject::disableAttribute(GLuint index)
 
 void VertexArrayObject::registerAttribute(const VertexAttribute& attribute)
 {
+#pragma warning(push)
+#pragma warning(disable : 4312)
+
     glVertexAttribPointer(
         attribute.location,
         attribute.componentCount,
         attribute.dataType,
         attribute.normalized ? GL_TRUE : GL_FALSE,
         attribute.stride,
-        reinterpret_cast<GLvoid*>(attribute.offset));
+        (GLvoid*)attribute.offset);
+
+#pragma warning(pop)
 }
 
 }

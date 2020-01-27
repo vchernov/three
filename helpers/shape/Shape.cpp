@@ -16,6 +16,14 @@
 #pragma warning(disable: 4305)
 #pragma warning(disable: 4838)
 #pragma warning(disable: 4996)
+#pragma warning(disable: 6011)
+#pragma warning(disable: 6308)
+#pragma warning(disable: 6385)
+#pragma warning(disable: 6386)
+#pragma warning(disable: 6387)
+#pragma warning(disable: 26451)
+#pragma warning(disable: 28182)
+#pragma warning(disable: 28183)
 #define PAR_SHAPES_IMPLEMENTATION
 #include "../../3rdparty/par/par_shapes.h"
 #pragma warning(pop)
