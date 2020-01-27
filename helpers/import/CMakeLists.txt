@@ -7,16 +7,11 @@ add_library(import
 	DynamicModelImporter.cpp
 )
 
-find_package(assimp REQUIRED)
-
-target_include_directories(import
-	PRIVATE
-		${ASSIMP_INCLUDE_DIRS}
-)
+find_package(assimp CONFIG REQUIRED)
 
 target_link_libraries(import
     PRIVATE
-		${ASSIMP_LIBRARIES}
+		assimp::assimp
     PUBLIC
 		engine
 )
