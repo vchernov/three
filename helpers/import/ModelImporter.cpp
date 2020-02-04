@@ -3,10 +3,19 @@
 #include <iostream>
 
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
+#include "../engine/FileSystem.h"
+#include "../engine/FileNotFoundException.h"
 
 using namespace three;
+
+ModelImporter::ModelData::ModelData(ModelGeometry geo, ImageRGB diffuseMap)
+    : geo(std::move(geo))
+    , diffuseMap(std::move(diffuseMap))
+{
+}
 
 template<typename VertexType>
 void copyPosition(const aiVector3D& position, VertexType& vertex)
@@ -24,16 +33,23 @@ void copyNormal(const aiVector3D& normal, VertexType& vertex)
     vertex.normal.z = normal.z;
 }
 
-std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std::string& fn)
+template<typename VertexType>
+void copyTexCoord(const aiVector3D& texCoord, VertexType& vertex)
 {
-    std::vector<ModelGeometry> geometry;
+    vertex.texCoord.x = texCoord.x;
+    vertex.texCoord.y = texCoord.y;
+}
+
+std::vector<ModelImporter::ModelData> ModelImporter::loadGeometry(const std::string& fn)
+{
+    std::vector<ModelData> importedData;
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(fn.c_str(), aiProcess_Triangulate);
     if (scene == nullptr)
     {
         std::cerr << importer.GetErrorString() << std::endl;
-        return geometry;
+        return importedData;
     }
 
     for (unsigned int mi = 0; mi < scene->mNumMeshes; mi++)
@@ -46,6 +62,9 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
         assert(mesh->HasPositions());
         assert(mesh->HasNormals());
 
+        assert(mesh->HasTextureCoords(0));
+        assert(mesh->mNumUVComponents[0] == 2);
+
         ModelGeometry geo;
         geo.primitiveType = GL_TRIANGLES;
 
@@ -55,6 +74,7 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
 
             copyPosition(mesh->mVertices[vi], vertex);
             copyNormal(mesh->mNormals[vi], vertex);
+            copyTexCoord(mesh->mTextureCoords[0][vi], vertex);
 
             geo.vertices.push_back(vertex);
         }
@@ -71,8 +91,29 @@ std::vector<ModelImporter::ModelGeometry> ModelImporter::loadGeometry(const std:
             geo.faces.push_back(face);
         }
 
-        geometry.push_back(geo);
+        std::string cd = FileSystem::getCurrentDirectory();
+        std::string modelFilePath = FileSystem::getFilePath(fn);
+        FileSystem::setCurrentDirectory(modelFilePath);
+
+        const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        aiString texFileName;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &texFileName);
+
+        try
+        {
+            ImageRGB tex = ImageUtils::loadImage(texFileName.C_Str());
+            std::cout << "Loaded texture: " << texFileName.C_Str() << " " << tex.getWidth() << "x" << tex.getWidth() << std::endl;
+            importedData.push_back(ModelData(geo, std::move(tex)));
+        }
+        catch (FileNotFoundException& e)
+        {
+            std::cerr << e.what() << std::endl;
+            ImageRGB whiteTex = ImageUtils::createPlainColorImage(2, 2, 255, 255, 255);
+            importedData.push_back(ModelData(geo, std::move(whiteTex)));
+        }
+
+        FileSystem::setCurrentDirectory(cd);
     }
 
-    return geometry;
+    return importedData;
 }

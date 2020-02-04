@@ -49,9 +49,6 @@ Window::Window(const std::string& title, int width, int height)
     glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
     glViewport(0, 0, fbWidth, fbHeight);
 
-    glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
     assert(glGetError() == GL_NO_ERROR);
 }
 

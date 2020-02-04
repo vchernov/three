@@ -1,2 +1,2 @@
 add_executable(importing importing.cpp)
-target_link_libraries(importing engine window import)
+target_link_libraries(importing engine window import image)

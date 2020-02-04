@@ -37,3 +37,16 @@ AttributeBindings MeshBuilder::getAttributes<VertexPositionNormal>()
         static_cast<int>(AttributeLocation::normal), sizeof(glm::vec3), sizeof(VertexPositionNormal)));
     return bindings;
 }
+
+template<>
+AttributeBindings MeshBuilder::getAttributes<VertexPositionNormalTexture>()
+{
+    AttributeBindings bindings;
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::position), 0, sizeof(VertexPositionNormalTexture)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec2>(
+        static_cast<int>(AttributeLocation::texCoord), sizeof(glm::vec3), sizeof(VertexPositionNormalTexture)));
+    bindings.attributes.push_back(VertexAttribute::create<glm::vec3>(
+        static_cast<int>(AttributeLocation::normal), sizeof(glm::vec3) + sizeof(glm::vec2), sizeof(VertexPositionNormalTexture)));
+    return bindings;
+}

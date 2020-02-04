@@ -15,6 +15,8 @@ add_library(engine
 	FileNotFoundException.h
     SubMesh.h
     SubMesh.cpp
+    Material.h
+    Material.cpp
     UniformName.h
     UniformName.cpp
     UniformBlockName.h

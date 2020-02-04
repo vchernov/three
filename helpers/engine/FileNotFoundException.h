@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdexcept>
 
 class FileNotFoundException : public std::runtime_error

@@ -1,23 +1,20 @@
 #include "ImageUtils.h"
 
-#include <iostream>
+#include "../engine/FileNotFoundException.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../3rdparty/stb/stb_image.h"
 
 using namespace three;
 
-Image<uint8_t> ImageUtils::loadImage(const std::string& fn)
+ImageRGB ImageUtils::loadImage(const std::string& fn)
 {
     stbi_set_flip_vertically_on_load(1);
 
     int width, height, numChannels;
     uint8_t* pixels = stbi_load(fn.c_str(), &width, &height, &numChannels, STBI_default);
     if (pixels == nullptr)
-    {
-        std::cerr << "Could not load image from file: " << fn << std::endl;
-        throw std::runtime_error("Image loading failed");
-    }
+        throw FileNotFoundException(fn);
 
     unsigned int format;
     switch (numChannels)
@@ -38,7 +35,7 @@ Image<uint8_t> ImageUtils::loadImage(const std::string& fn)
         throw std::runtime_error("Unsupported image format");
     }
 
-    return Image<uint8_t>(pixels, width, height, numChannels, format);
+    return ImageRGB(pixels, width, height, numChannels, format);
 }
 
 Texture2D ImageUtils::loadTexture(const std::string& fn, int internalFormat)
@@ -51,4 +48,19 @@ Texture2D ImageUtils::loadTexture(const std::string& fn, int internalFormat)
     Texture2D::setWrapping(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     Texture2D::unbind();
     return tex;
+}
+
+ImageRGB ImageUtils::createPlainColorImage(int width, int height, uint8_t r, uint8_t g, uint8_t b)
+{
+    ImageRGB img(width, height, 3, GL_RGB);
+    for (int y = 0; y < img.getHeight(); y++)
+    {
+        for (int x = 0; x < img.getWidth(); x++)
+        {
+            img(x, y, 0) = r;
+            img(x, y, 1) = g;
+            img(x, y, 2) = b;
+        }
+    }
+    return img;
 }

@@ -1,30 +1,30 @@
-#include <iostream>
 #include <future>
+#include <iostream>
 
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../../three/camera/PerspectiveCamera.h"
+#include "../../three/shader/ShaderManager.h"
 #include "../../three/shader/ShaderProgram.h"
 #include "../../three/shader/SmartShaderProgram.h"
-#include "../../three/shader/ShaderManager.h"
 #include "../../three/shader/Uniform.h"
 #include "../../three/shader/UniformBuffer.h"
-#include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
 #include "../../helpers/engine/FileSystem.h"
-#include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/MeshBuilder.h"
-#include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/UniformBlockName.h"
 #include "../../helpers/engine/Model.h"
+#include "../../helpers/engine/ShaderUtils.h"
+#include "../../helpers/engine/UniformBlockName.h"
+#include "../../helpers/engine/UniformName.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
-#include "../../helpers/import/ModelImporter.h"
 #include "../../helpers/import/DynamicModelImporter.h"
+#include "../../helpers/import/ModelImporter.h"
 
 using namespace three;
 
@@ -32,14 +32,11 @@ int main(int argc, char** argv)
 {
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
-
     std::cout << FileSystem::getCurrentDirectory() << std::endl;
 
     std::string modelFn;
     if (argc > 1)
-    {
         modelFn = argv[1];
-    }
 
     auto controls = std::make_shared<OrbitControls>();
     controls->setRotationSpeed(0.5f);
@@ -49,6 +46,17 @@ int main(int argc, char** argv)
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    //*
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    //*/
+
+    //*
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //*/
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -92,7 +100,7 @@ int main(int argc, char** argv)
     BoundingBox sceneBounds;
 
     //*
-    std::future<std::vector<ModelImporter::ModelGeometry>> result = std::async(
+    std::future<std::vector<ModelImporter::ModelData>> result = std::async(
         std::launch::async,
         &ModelImporter::loadGeometry,
         modelFn);
@@ -134,18 +142,26 @@ int main(int argc, char** argv)
 
             //*
             Model model;
-            std::vector<ModelImporter::ModelGeometry> geo = result.get();
-            for (auto& g : geo)
+            std::vector<ModelImporter::ModelData> importedData = result.get();
+            for (auto& data : importedData)
             {
-                SubMesh submesh(MeshBuilder::build(g));
-                submesh.bounds = BoundingBox::calculate(g.vertices);
+                SubMesh submesh(MeshBuilder::build(data.geo));
+
+                submesh.material.diffuseTex.bind();
+                Texture2D::upload(data.diffuseMap, GL_RGBA8);
+                Texture2D::setFiltering(GL_LINEAR, GL_LINEAR);
+                Texture2D::setWrapping(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+                Texture2D::unbind();
+                assert(glGetError() == GL_NO_ERROR);
+
+                submesh.bounds = BoundingBox::calculate(data.geo.vertices);
                 model.meshes.push_back(std::move(submesh));
             }
             //*/
 
             for (auto& submesh : model.meshes)
             {
-                submesh.applyShader(program);
+                submesh.material.applyShader(program);
 
                 sceneBounds.encapsulate(submesh.bounds);
                 controls->setPosition(sceneBounds.getCenter());

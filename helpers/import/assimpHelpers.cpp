@@ -12,7 +12,6 @@ unsigned int* importTriangleIndices(const aiMesh* mesh)
         const aiFace& aiFace = mesh->mFaces[i];
         //assert(aiFace.mNumIndices == 3);
         memcpy(indices + i * 3, aiFace.mIndices, sizeof(unsigned int) * 3);
-        // reason to dislike assimp :(
     }
     return indices;
 }
@@ -39,9 +38,7 @@ AttributeBindings uploadVertices(const aiMesh* mesh, VertexBuffer& vertexBuffer)
     int positionsLength = mesh->mNumVertices * sizeof(aiVector3D);
     int normalsLength = 0;
     if (mesh->HasNormals())
-    {
         normalsLength = mesh->mNumVertices * sizeof(aiVector3D);
-    }
     VertexBuffer::allocate(positionsLength + normalsLength);
 
     VertexBuffer::upload(0, positionsLength, mesh->mVertices);

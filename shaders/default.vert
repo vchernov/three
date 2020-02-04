@@ -1,6 +1,7 @@
 #version 330 core
 
 layout (location = 0) in vec3 position;
+layout (location = 2) in vec2 texCoord;
 layout (location = 3) in vec3 normal;
 
 uniform mat4 model;
@@ -15,6 +16,7 @@ out VertexData
 {
     vec3 normal;
     vec3 worldPos;
+    vec2 texCoord;
 } vertOut;
 
 void main()
@@ -23,4 +25,5 @@ void main()
     gl_Position = camera.projection * camera.view * worldPos;
     vertOut.normal = normal;
     vertOut.worldPos = worldPos.xyz;
+    vertOut.texCoord = texCoord;
 }

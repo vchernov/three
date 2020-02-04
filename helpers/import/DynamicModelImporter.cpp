@@ -10,7 +10,7 @@ class AssimpIntermediateImportResult : public DynamicModelImporter::Intermediate
 {
 public:
     Assimp::Importer importer;
-    const aiScene* scene;
+    const aiScene* scene = nullptr;
     std::vector<unsigned int*> allIndices;
     std::vector<BoundingBox> allBounds;
 
@@ -69,7 +69,7 @@ Mesh loadMesh(const aiMesh* mesh, unsigned int* cachedIndices)
     return Mesh::create(vertexBuffer, attributeBindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
-Model loadScene(const aiScene* scene, const std::vector<unsigned int*>& allIndices, const std::vector<BoundingBox> allBounds)
+Model loadScene(const aiScene* scene, const std::vector<unsigned int*>& allIndices, const std::vector<BoundingBox>& allBounds)
 {
     Model model;
 

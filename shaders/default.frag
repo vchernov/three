@@ -4,6 +4,7 @@ in VertexData
 {
     vec3 normal;
     vec3 worldPos;
+    vec2 texCoord;
 } fragIn;
 
 layout(std140) uniform Light
@@ -13,6 +14,7 @@ layout(std140) uniform Light
 } light;
 
 uniform mat4 model;
+uniform sampler2D diffuseTex;
 
 out vec4 fragColor;
 
@@ -27,5 +29,6 @@ void main()
 {
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 fragNormal = normalize(normalMatrix * fragIn.normal);
-    fragColor = vec4(light.diffuse * halfLambert(fragIn.worldPos, fragNormal, light.pos), 1.0);
+    vec4 texColor = texture2D(diffuseTex, fragIn.texCoord);
+    fragColor = vec4(light.diffuse * halfLambert(fragIn.worldPos, fragNormal, light.pos), 1.0) * texColor;
 }
