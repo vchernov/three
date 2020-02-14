@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "FileSystem.h"
+#include "fs/FileSystem.h"
 
 #include "../../three/shader/Shader.h"
 

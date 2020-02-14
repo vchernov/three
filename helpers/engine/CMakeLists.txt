@@ -10,9 +10,6 @@ add_library(engine
     MeshBuilder.cpp
     ShaderUtils.h
     ShaderUtils.cpp
-    FileSystem.h
-    FileSystem.cpp
-	FileNotFoundException.h
     SubMesh.h
     SubMesh.cpp
     Material.h
@@ -23,6 +20,11 @@ add_library(engine
     UniformBlockName.cpp
     BoundingBox.h
     BoundingBox.cpp
+    fs/FileSystem.h
+    fs/FileSystem.cpp
+	fs/FileNotFoundException.h
+    fs/ChangeDir.h
+    fs/ChangeDir.cpp
 )
 
 target_link_libraries(engine

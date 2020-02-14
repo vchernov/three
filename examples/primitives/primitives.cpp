@@ -4,16 +4,17 @@
 
 #include <glm/glm.hpp>
 
+#include "../../three/camera/PerspectiveCamera.h"
+#include "../../three/mesh/Mesh.h"
+#include "../../three/shader/AttributeInfo.h"
 #include "../../three/shader/ShaderProgram.h"
 #include "../../three/shader/Uniform.h"
-#include "../../three/shader/AttributeInfo.h"
-#include "../../three/mesh/Mesh.h"
-#include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
-#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
+
+#include "../../helpers/engine/fs/FileSystem.h"
 
 #include "../../helpers/shape/Shape.h"
 
@@ -77,9 +78,9 @@ int main(int argc, char** argv)
     std::vector<SimpleModel> models;
 
     {
-		SimpleModel model(Shape::createGrid(
-			glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f),
-			8, 8));
+        SimpleModel model(Shape::createGrid(
+            glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f),
+            8, 8));
         model.color = glm::vec3(1.0f, 1.0f, 1.0f);
         models.push_back(std::move(model));
     }

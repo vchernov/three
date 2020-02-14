@@ -1,5 +1,5 @@
-#include <iostream>
 #include <array>
+#include <iostream>
 
 #include <GL/glew.h>
 
@@ -7,26 +7,27 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../../three/camera/PerspectiveCamera.h"
+#include "../../three/mesh/Mesh.h"
+#include "../../three/shader/ShaderManager.h"
 #include "../../three/shader/ShaderProgram.h"
+#include "../../three/shader/SmartShaderProgram.h"
+#include "../../three/shader/SmartUniform.h"
 #include "../../three/shader/Uniform.h"
 #include "../../three/shader/UniformBuffer.h"
-#include "../../three/mesh/Mesh.h"
-#include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
-#include "../../three/shader/SmartShaderProgram.h"
-#include "../../three/shader/ShaderManager.h"
-#include "../../three/shader/SmartUniform.h"
 
-#include "../../helpers/engine/FileSystem.h"
-#include "../../helpers/engine/ShaderUtils.h"
-#include "../../helpers/engine/UniformName.h"
-#include "../../helpers/engine/UniformBlockName.h"
 #include "../../helpers/engine/AttributeLocation.h"
+#include "../../helpers/engine/ShaderUtils.h"
+#include "../../helpers/engine/UniformBlockName.h"
+#include "../../helpers/engine/UniformName.h"
+
+#include "../../helpers/engine/fs/FileSystem.h"
 
 #include "../../helpers/shape/Shape.h"
 
-#include "../../helpers/window/WindowFactory.h"
 #include "../../helpers/window/Time.h"
+#include "../../helpers/window/WindowFactory.h"
 
 using namespace three;
 
@@ -34,16 +35,15 @@ struct SimpleModel
 {
 public:
     SimpleModel(Mesh mesh, std::shared_ptr<SmartShaderProgram> program)
-        :
-        mesh(std::move(mesh)),
-        program(std::move(program))
+        : mesh(std::move(mesh))
+        , program(std::move(program))
     {
     }
 
     Mesh mesh;
     std::shared_ptr<SmartShaderProgram> program;
     ModelTransform transform;
-    glm::vec3 color;
+    glm::vec3 color = {1.0f, 1.0f, 1.0f};
 };
 
 class PointLight
@@ -65,9 +65,9 @@ public:
         vb.bind();
         VertexBuffer::allocate(points);
 
-		vao.registerAttribute(VertexAttribute::create<float>(
-			static_cast<int>(AttributeLocation::position),
-			3, 0, sizeof(glm::vec3)));
+        vao.registerAttribute(VertexAttribute::create<float>(
+            static_cast<int>(AttributeLocation::position),
+            3, 0, sizeof(glm::vec3)));
         vao.enableAttribute(static_cast<int>(AttributeLocation::position));
 
         VertexArrayObject::unbind();

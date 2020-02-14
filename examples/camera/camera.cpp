@@ -4,15 +4,16 @@
 
 #include <glm/glm.hpp>
 
+#include "../../three/camera/PerspectiveCamera.h"
+#include "../../three/mesh/Mesh.h"
 #include "../../three/shader/ShaderProgram.h"
 #include "../../three/shader/Uniform.h"
-#include "../../three/mesh/Mesh.h"
-#include "../../three/camera/PerspectiveCamera.h"
 #include "../../three/transform/ModelTransform.h"
 
-#include "../../helpers/engine/FileSystem.h"
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformName.h"
+
+#include "../../helpers/engine/fs/FileSystem.h"
 
 #include "../../helpers/shape/Shape.h"
 
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
     std::cout << "start" << std::endl;
     std::cout << std::boolalpha;
 
-	std::cout << FileSystem::getCurrentDirectory() << std::endl;
+    std::cout << FileSystem::getCurrentDirectory() << std::endl;
 
     auto controls = std::make_shared<OrbitControls>();
     controls->setRotationSpeed(0.5f);
@@ -46,11 +47,11 @@ int main(int argc, char** argv)
 
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
 
-	ShaderProgram program;
-	try
-	{
-		program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
-	}
+    ShaderProgram program;
+    try
+    {
+        program = ShaderUtils::loadShaderProgram("shaders/position_only.vert", "shaders/position_only.frag");
+    }
     catch (FileNotFoundException& e)
     {
         std::cerr << e.what() << std::endl;
@@ -66,9 +67,9 @@ int main(int argc, char** argv)
     Uniform<glm::mat4> modelMatUniform(program.getUniformLocation(UniformName::modelMatrix));
 
     auto primitiveMesh = Shape::createTriangle();
-	auto gridMesh = Shape::createGrid(
-		glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f),
-		8, 8);
+    auto gridMesh = Shape::createGrid(
+        glm::vec3(-1.0f, -1.0f, -0.0f), glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(-1.0f, 1.0f, 0.0f),
+        8, 8);
 
     std::vector<SimpleModel> models;
 

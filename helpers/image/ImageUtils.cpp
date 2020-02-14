@@ -1,6 +1,6 @@
 #include "ImageUtils.h"
 
-#include "../engine/FileNotFoundException.h"
+#include "../engine/fs/FileNotFoundException.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../3rdparty/stb/stb_image.h"

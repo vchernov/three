@@ -1,13 +1,16 @@
 #include "ModelImporter.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "../engine/FileSystem.h"
-#include "../engine/FileNotFoundException.h"
+#include "../engine/fs/ChangeDir.h"
+#include "../engine/fs/FileNotFoundException.h"
+#include "../engine/fs/FileSystem.h"
 
 using namespace three;
 
@@ -42,6 +45,11 @@ void copyTexCoord(const aiVector3D& texCoord, VertexType& vertex)
 
 std::vector<ModelImporter::ModelData> ModelImporter::loadGeometry(const std::string& fn)
 {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    std::cout << "loadGeometry start:";
+    std::cout << " thread=" << std::this_thread::get_id();
+    std::cout << std::endl;
+
     std::vector<ModelData> importedData;
 
     Assimp::Importer importer;
@@ -91,9 +99,7 @@ std::vector<ModelImporter::ModelData> ModelImporter::loadGeometry(const std::str
             geo.faces.push_back(face);
         }
 
-        std::string cd = FileSystem::getCurrentDirectory();
-        std::string modelFilePath = FileSystem::getFilePath(fn);
-        FileSystem::setCurrentDirectory(modelFilePath);
+        ChangeDir cd{FileSystem::getFilePath(fn)};
 
         const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         aiString texFileName;
@@ -111,9 +117,14 @@ std::vector<ModelImporter::ModelData> ModelImporter::loadGeometry(const std::str
             ImageRGB whiteTex = ImageUtils::createPlainColorImage(2, 2, 255, 255, 255);
             importedData.push_back(ModelData(geo, std::move(whiteTex)));
         }
-
-        FileSystem::setCurrentDirectory(cd);
     }
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<int64_t, std::nano> elapsedTime = (endTime - startTime);
+    std::cout << "loadGeometry complete:";
+    std::cout << " thread=" << std::this_thread::get_id();
+    std::cout << " time=" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
+    std::cout << std::endl;
 
     return importedData;
 }
