@@ -1,36 +1,22 @@
 #include "ModelLoader.h"
 
-#include "../../helpers/engine/Model.h"
-
-#include "../../3rdparty/fx-gltf/include/fx/gltf.h"
-
+#include <fstream>
 #include <iostream>
 
+#include <nlohmann/json.hpp>
+
+#include "gltf.h"
+#include "../../helpers/engine/Model.h"
+
 using namespace three;
+using json = nlohmann::json;
 
 void ModelLoader::loadModel(const std::string& fn)
 {
-	fx::gltf::Document doc = fx::gltf::LoadFromText(fn);
+    std::ifstream f(fn);
+    if (!f.is_open())
+        return;
 
-	for (const auto& buffer : doc.buffers)
-	{
-	}
-
-	for (const auto& mesh : doc.meshes)
-	{
-		for (const auto& primitive : mesh.primitives)
-		{
-			const auto& accessor = doc.accessors[primitive.indices];
-			const auto& bufferView = doc.bufferViews[accessor.bufferView];
-
-			IndexBuffer indexBuffer;
-			indexBuffer.bind();
-
-			const auto& buffer = doc.buffers[bufferView.buffer];
-			indexBuffer.allocate((GLenum)accessor.componentType,
-				4, bufferView.byteLength, &buffer.data[bufferView.byteOffset]);
-
-			IndexBuffer::unbind();
-		}
-	}
+    json j = json::parse(f);
+    auto doc = j.get<gltf::Document>();
 }
