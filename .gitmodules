@@ -1,6 +1,3 @@
-[submodule "3rdparty/fx-gltf"]
-	path = 3rdparty/fx-gltf
-	url = https://github.com/jessey-git/fx-gltf.git
 [submodule "3rdparty/stb"]
 	path = 3rdparty/stb
 	url = https://github.com/nothings/stb.git
