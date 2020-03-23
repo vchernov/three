@@ -1,15 +1,20 @@
 #pragma once
 
-#include <vector>
+#include <glm/glm.hpp>
 
-#include "../../three/transform/ModelTransform.h"
+#include "../../three/mesh/Mesh.h"
 
-#include "SubMesh.h"
+#include "BoundingBox.h"
+#include "Material.h"
 
-struct Model final
+class Model
 {
-    std::vector<SubMesh> meshes;
-    three::ModelTransform transform;
+public:
+    Model(three::Mesh mesh);
 
-    void draw() const;
+    three::Mesh mesh;
+    BoundingBox bounds;
+    Material material;
+
+    void draw(glm::mat4) const;
 };

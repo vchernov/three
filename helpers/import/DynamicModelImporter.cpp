@@ -69,24 +69,22 @@ Mesh loadMesh(const aiMesh* mesh, unsigned int* cachedIndices)
     return Mesh::create(vertexBuffer, attributeBindings, std::move(indexBuffer), GL_TRIANGLES);
 }
 
-Model loadScene(const aiScene* scene, const std::vector<unsigned int*>& allIndices, const std::vector<BoundingBox>& allBounds)
+Node loadScene(const aiScene* scene, const std::vector<unsigned int*>& allIndices, const std::vector<BoundingBox>& allBounds)
 {
-    Model model;
+    Node node;
 
     if (scene == nullptr)
-    {
-        return model;
-    }
+        return node;
 
     for (unsigned int mi = 0; mi < scene->mNumMeshes; mi++)
     {
         const aiMesh* mesh = scene->mMeshes[mi];
-        SubMesh submesh(loadMesh(mesh, allIndices[mi]));
-        submesh.bounds = allBounds[mi];
-        model.meshes.push_back(std::move(submesh));
+        Model model(loadMesh(mesh, allIndices[mi]));
+        model.bounds = allBounds[mi];
+        node.models.push_back(std::move(model));
     }
 
-    return model;
+    return node;
 }
 
 std::shared_ptr<DynamicModelImporter::IntermediateImportResult> DynamicModelImporter::importModel(const std::string& fn)
@@ -98,7 +96,7 @@ std::shared_ptr<DynamicModelImporter::IntermediateImportResult> DynamicModelImpo
     return std::shared_ptr<AssimpIntermediateImportResult>(result);
 }
 
-Model DynamicModelImporter::loadModel(std::shared_ptr<DynamicModelImporter::IntermediateImportResult> intermediateResult)
+Node DynamicModelImporter::loadModel(std::shared_ptr<DynamicModelImporter::IntermediateImportResult> intermediateResult)
 {
     AssimpIntermediateImportResult* result = dynamic_cast<AssimpIntermediateImportResult*>(intermediateResult.get());
     return loadScene(result->scene, result->allIndices, result->allBounds);

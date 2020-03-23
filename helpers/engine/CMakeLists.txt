@@ -10,8 +10,6 @@ add_library(engine
     MeshBuilder.cpp
     ShaderUtils.h
     ShaderUtils.cpp
-    SubMesh.h
-    SubMesh.cpp
     Material.h
     Material.cpp
     UniformName.h
@@ -25,7 +23,13 @@ add_library(engine
 	fs/FileNotFoundException.h
     fs/ChangeDir.h
     fs/ChangeDir.cpp
-)
+    scene/Node.h
+    scene/Node.cpp
+    scene/Scene.h
+    scene/Scene.cpp
+    scene/ITransform.h
+    scene/TransformComponent.h
+ )
 
 target_link_libraries(engine
     PUBLIC

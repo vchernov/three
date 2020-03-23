@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include "../engine/Model.h"
+#include "../engine/scene/Node.h"
 
 class DynamicModelImporter
 {
@@ -15,5 +15,5 @@ public:
     };
 
     static std::shared_ptr<IntermediateImportResult> importModel(const std::string& fn);
-    static Model loadModel(std::shared_ptr<IntermediateImportResult> intermediateResult);
+    static Node loadModel(std::shared_ptr<IntermediateImportResult> intermediateResult);
 };

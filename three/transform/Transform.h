@@ -5,12 +5,10 @@
 namespace three
 {
 
-class Transform
+class Transform final
 {
 public:
-    virtual ~Transform() = default;
-
-    glm::mat4 getTransformationMatrix() const;
+    glm::mat4 getLocalToWorldMatrix() const;
 
     void translate(glm::vec3 translation);
     void scale(glm::vec3 scale);
@@ -19,7 +17,7 @@ public:
     void lookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up);
 
 private:
-    glm::mat4 transform = glm::mat4(1.0f);
+    glm::mat4 matrix = glm::mat4(1.0f);
 };
 
 }

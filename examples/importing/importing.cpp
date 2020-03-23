@@ -1,5 +1,7 @@
+#include <chrono>
 #include <future>
 #include <iostream>
+#include <thread>
 
 #include <GL/glew.h>
 
@@ -19,8 +21,8 @@
 #include "../../helpers/engine/ShaderUtils.h"
 #include "../../helpers/engine/UniformBlockName.h"
 #include "../../helpers/engine/UniformName.h"
-
 #include "../../helpers/engine/fs/FileSystem.h"
+#include "../../helpers/engine/scene/Scene.h"
 
 #include "../../helpers/window/WindowFactory.h"
 
@@ -97,8 +99,13 @@ int main(int argc, char** argv)
 
     assert(glGetError() == GL_NO_ERROR);
 
-    std::vector<Model> models;
+    Scene scene;
     BoundingBox sceneBounds;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    std::cout << "loading start:";
+    std::cout << " thread=" << std::this_thread::get_id();
+    std::cout << std::endl;
 
     //*
     std::future<std::vector<ModelImporter::ModelData>> result = std::async(
@@ -130,46 +137,50 @@ int main(int argc, char** argv)
         UniformBuffer::upload(sizeof(glm::vec3), sizeof(glm::vec3), glm::value_ptr(lightPos));
         UniformBuffer::unbind();
 
-        for (auto& model : models)
-        {
-            model.draw();
-        }
+        scene.draw();
 
         wnd->swapBuffers();
 
         if (result.valid() && result.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
         {
-            //Model model = DynamicModelImporter::loadModel(result.get());
+            //Node node = DynamicModelImporter::loadModel(result.get());
 
             //*
-            Model model;
+            Node node;
             std::vector<ModelImporter::ModelData> importedData = result.get();
             for (auto& data : importedData)
             {
-                SubMesh submesh(MeshBuilder::build(data.geo));
+                Model model(MeshBuilder::build(data.geo));
 
-                submesh.material.diffuseTex.bind();
+                model.material.diffuseTex.bind();
                 Texture2D::upload(data.diffuseMap, GL_RGBA8);
                 Texture2D::setFiltering(GL_LINEAR, GL_LINEAR);
                 Texture2D::setWrapping(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
                 Texture2D::unbind();
                 assert(glGetError() == GL_NO_ERROR);
 
-                submesh.bounds = BoundingBox::calculate(data.geo.vertices);
-                model.meshes.push_back(std::move(submesh));
+                model.bounds = BoundingBox::calculate(data.geo.vertices);
+                node.models.push_back(std::move(model));
             }
             //*/
 
-            for (auto& submesh : model.meshes)
+            for (auto& model : node.models)
             {
-                submesh.material.applyShader(program);
+                model.material.applyShader(program);
 
-                sceneBounds.encapsulate(submesh.bounds);
+                sceneBounds.encapsulate(model.bounds);
                 controls->setPosition(sceneBounds.getCenter());
                 controls->setRadius(glm::length(sceneBounds.getSize()));
             }
 
-            models.push_back(std::move(model));
+            scene.root.children.push_back(std::move(node));
+
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<int64_t, std::nano> elapsedTime = (end - start);
+            std::cout << "loading complete:";
+            std::cout << " thread=" << std::this_thread::get_id();
+            std::cout << " time=" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
+            std::cout << std::endl;
         }
     }
 

@@ -2,14 +2,16 @@
 
 using namespace three;
 
-void Model::draw() const
+Model::Model(three::Mesh mesh)
+    : mesh(std::move(mesh))
 {
-    for (const auto& submesh : meshes)
-    {
-        submesh.material.shader->use();
-        submesh.material.diffuseTex.bind();
-        submesh.material.modelMatrixUniform.lock()->set(transform.getTransformationMatrix());
-        submesh.mesh.draw();
-        Texture2D::unbind();
-    }
+}
+
+void Model::draw(glm::mat4 modelMatrix) const
+{
+    material.shader->use();
+    material.diffuseTex.bind();
+    material.modelMatrixUniform.lock()->set(modelMatrix);
+    mesh.draw();
+    Texture2D::unbind();
 }

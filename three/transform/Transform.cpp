@@ -5,29 +5,29 @@
 namespace three
 {
 
-glm::mat4 Transform::getTransformationMatrix() const
+glm::mat4 Transform::getLocalToWorldMatrix() const
 {
-    return transform;
+    return matrix;
 }
 
 void Transform::translate(glm::vec3 translation)
 {
-    transform = glm::translate(transform, translation);
+    matrix = glm::translate(matrix, translation);
 }
 
 void Transform::scale(glm::vec3 scale)
 {
-    transform = glm::scale(transform, scale);
+    matrix = glm::scale(matrix, scale);
 }
 
 void Transform::rotate(float angle, glm::vec3 axis)
 {
-    transform = glm::rotate(transform, glm::radians(angle), axis);
+    matrix = glm::rotate(matrix, glm::radians(angle), axis);
 }
 
 void Transform::lookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up)
 {
-    transform = glm::lookAt(eye, center, up);
+    matrix = glm::lookAt(eye, center, up);
 }
 
 }

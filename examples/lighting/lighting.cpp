@@ -203,7 +203,7 @@ int main(int argc, char** argv)
             lightColorUniform.set(light.lightColor);
             lightPosUniform.set(light.position);
             viewPosUniform.set(controls->getEyePosition());
-            modelMatrixUniform.set(model.transform.getTransformationMatrix());
+            modelMatrixUniform.set(model.transform.getLocalToWorldMatrix());
             model.mesh.draw();
         }
 

@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         for (const auto& model : models)
         {
             colorUniform.set(model.color);
-            modelMatUniform.set(model.transform.getTransformationMatrix());
+            modelMatUniform.set(model.transform.getLocalToWorldMatrix());
             model.mesh->draw();
         }
 

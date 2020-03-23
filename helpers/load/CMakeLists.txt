@@ -12,4 +12,5 @@ target_link_libraries(load
         nlohmann_json::nlohmann_json
     PUBLIC
 		engine
+        image
 )
