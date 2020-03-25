@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include "../engine/scene/Scene.h"
 
 class ModelLoader
 {
 public:
-	static void loadModel(const std::string& fn);
+	static std::vector<Scene> loadModel(const std::string& fn);
 };

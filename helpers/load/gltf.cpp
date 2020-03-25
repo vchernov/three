@@ -52,20 +52,44 @@ void from_json(const json& j, Node& node)
     if (j.find("children") != j.end())
         j.at("children").get_to(node.children);
 
+    node.hasTransform = false;
+
     if (j.find("translation") != j.end())
+    {
         j.at("translation").get_to(node.translation);
+        node.hasTransform = true;
+    }
     else
+    {
         std::fill(std::begin(node.translation), std::end(node.translation), 0.0f);
+    }
 
     if (j.find("rotation") != j.end())
+    {
         j.at("rotation").get_to(node.rotation);
+        node.hasTransform = true;
+    }
     else
+    {
         node.rotation = {0.0f, 0.0f, 0.0f, 1.0f};
+    }
 
     if (j.find("scale") != j.end())
+    {
         j.at("scale").get_to(node.scale);
+        node.hasTransform = true;
+    }
     else
+    {
         std::fill(std::begin(node.scale), std::end(node.scale), 1.0f);
+    }
+
+    node.hasMatrix = false;
+    if (j.find("matrix") != j.end())
+    {
+        j.at("matrix").get_to(node.matrix);
+        node.hasMatrix = true;
+    }
 }
 
 void from_json(const json& j, Scene& scene)

@@ -7,35 +7,65 @@
 
 #include <glm/glm.hpp>
 
+#include "BufferHolder.h"
 #include "gltf.h"
+
+#include "../../three/transform/ModelTransform.h"
+#include "../../three/transform/Transform.h"
 
 #include "../../helpers/engine/Model.h"
 #include "../../helpers/engine/fs/ChangeDir.h"
 #include "../../helpers/engine/fs/FileNotFoundException.h"
 #include "../../helpers/engine/fs/FileSystem.h"
+#include "../../helpers/engine/scene/ITransform.h"
+#include "../../helpers/engine/scene/TransformComponent.h"
 
 #include "../../helpers/image/ImageUtils.h"
 
 using namespace three;
 using json = nlohmann::json;
+using BinBufferHolder = BufferHolder<char>;
 
-struct SceneData
+struct Content
 {
     gltf::Document document;
-    std::vector<char*> buffers;
+    std::vector<BinBufferHolder> buffers;
     std::vector<ImageRGB> images;
 };
 
-void traverse(const gltf::Node& node, glm::mat4& matrix, const SceneData& sceneData)
+void processElements(const gltf::Node& node, const Content& content, Node& target)
 {
-    for (int nodeIndex : node.children)
+    if (node.hasTransform)
     {
-        const gltf::Node& child = sceneData.document.nodes[nodeIndex];
-        traverse(child, matrix, sceneData);
+        auto transform = std::make_unique<TransformComponent<three::ModelTransform>>();
+        target.transforms.push_back(std::move(transform));
+    }
+
+    if (node.hasMatrix)
+    {
+        auto transform = std::make_unique<TransformComponent<three::Transform>>();
+        target.transforms.push_back(std::move(transform));
+    }
+
+    if (node.mesh >= 0 && node.mesh < content.document.meshes.size())
+    {
     }
 }
 
-void ModelLoader::loadModel(const std::string& fn)
+void traverse(const gltf::Node& node, const Content& content, Node& target)
+{
+    processElements(node, content, target);
+
+    for (int nodeIndex : node.children)
+    {
+        const gltf::Node& child = content.document.nodes[nodeIndex];
+        Node newNode;
+        traverse(child, content, newNode);
+        target.children.push_back(std::move(newNode));
+    }
+}
+
+std::vector<Scene> ModelLoader::loadModel(const std::string& fn)
 {
     std::ifstream gltfFile(fn);
     if (!gltfFile.is_open())
@@ -44,13 +74,12 @@ void ModelLoader::loadModel(const std::string& fn)
     json j = json::parse(gltfFile);
     gltfFile.close();
 
-    auto doc = j.get<gltf::Document>();
+    Content content;
+    content.document = j.get<gltf::Document>();
 
     ChangeDir cd{FileSystem::getFilePath(fn)};
 
-    std::vector<char*> buffers;
-
-    for (const auto& buffer : doc.buffers)
+    for (const auto& buffer : content.document.buffers)
     {
         std::fstream file(buffer.uri, std::ios::in | std::ios::binary);
         if (!file.is_open())
@@ -60,28 +89,26 @@ void ModelLoader::loadModel(const std::string& fn)
         file.read(bytes, buffer.byteLength);
         file.close();
 
-        buffers.push_back(bytes);
+        content.buffers.push_back(BinBufferHolder(bytes));
     }
 
-    std::vector<ImageRGB> images;
-
-    for (const auto& image : doc.images)
+    for (const auto& image : content.document.images)
     {
-        images.push_back(ImageUtils::loadImage(image.uri));
+        content.images.push_back(ImageUtils::loadImage(image.uri));
     }
 
-    for (const auto& scene : doc.scenes)
+    std::vector<Scene> scenes;
+
+    for (const auto& scene : content.document.scenes)
     {
         for (int rootNodeIndex : scene.nodes)
         {
-            const gltf::Node& rootNode = doc.nodes[rootNodeIndex];
-
-            glm::mat4 matrix = glm::mat4(1.0f);
-            SceneData sceneData;
-            traverse(rootNode, matrix, sceneData);
+            const gltf::Node& root = content.document.nodes[rootNodeIndex];
+            Scene scene;
+            traverse(root, content, scene.root);
+            scenes.push_back(std::move(scene));
         }
     }
 
-    for (char* buffer : buffers)
-        delete[] buffer;
+    return scenes;
 }

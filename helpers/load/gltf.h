@@ -64,9 +64,14 @@ struct Node
 {
     int mesh;
     std::vector<int> children;
+    
+    bool hasTransform;
     std::array<float, 3> translation;
     std::array<float, 4> rotation;
     std::array<float, 3> scale;
+
+    bool hasMatrix;
+    std::array<float, 16> matrix;
 };
 
 void from_json(const json& j, Node& node);
