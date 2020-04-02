@@ -21,6 +21,12 @@ void Uniform<int>::update(int location, int value)
 }
 
 template<>
+void Uniform<glm::vec2>::update(int location, glm::vec2 value)
+{
+    glUniform2fv(location, 1, glm::value_ptr(value));
+}
+
+template<>
 void Uniform<glm::vec3>::update(int location, glm::vec3 value)
 {
     glUniform3fv(location, 1, glm::value_ptr(value));
