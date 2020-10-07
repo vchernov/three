@@ -8,6 +8,8 @@ namespace three
 class Transform final
 {
 public:
+    void set(glm::mat4 matrix);
+
     glm::mat4 getLocalToWorldMatrix() const;
 
     void translate(glm::vec3 translation);

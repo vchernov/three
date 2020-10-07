@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "BufferHolder.h"
 #include "gltf.h"
@@ -37,14 +38,24 @@ void processElements(const gltf::Node& node, const Content& content, Node& targe
 {
     if (node.hasTransform)
     {
-        auto transform = std::make_unique<TransformComponent<three::ModelTransform>>();
-        target.transforms.push_back(std::move(transform));
+        auto transformComponent = std::make_unique<TransformComponent<three::ModelTransform>>();
+        auto& transform = transformComponent->transform;
+
+        transform.position = glm::make_vec3(node.translation.data());
+        transform.rotation = glm::make_quat(node.rotation.data());
+        transform.scale = glm::make_vec3(node.scale.data());
+
+        target.transforms.push_back(std::move(transformComponent));
     }
 
     if (node.hasMatrix)
     {
-        auto transform = std::make_unique<TransformComponent<three::Transform>>();
-        target.transforms.push_back(std::move(transform));
+        auto transformComponent = std::make_unique<TransformComponent<three::Transform>>();
+        auto& transform = transformComponent->transform;
+
+        transform.set(glm::make_mat4(node.matrix.data()));
+
+        target.transforms.push_back(std::move(transformComponent));
     }
 
     if (node.mesh >= 0 && node.mesh < content.document.meshes.size())

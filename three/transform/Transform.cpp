@@ -5,6 +5,11 @@
 namespace three
 {
 
+void Transform::set(glm::mat4 matrix)
+{
+    this->matrix = matrix;
+}
+
 glm::mat4 Transform::getLocalToWorldMatrix() const
 {
     return matrix;
