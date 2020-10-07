@@ -30,14 +30,9 @@
 
 using namespace three;
 
-Mesh Shape::createTriangle()
+Mesh Shape::createTriangle(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2)
 {
-    const float offset = 0.5f;
-    std::array<glm::vec3, 3> vertices = {
-        glm::vec3(-offset, -offset, 0.0f),
-        glm::vec3(offset, -offset, 0.0f),
-        glm::vec3(offset, offset, 0.0f)
-    };
+    std::array<glm::vec3, 3> vertices = {point0, point1, point2};
 
     std::array<Face3, 1> faces = {
         {0, 1, 2}
@@ -62,6 +57,16 @@ Mesh Shape::createTriangle()
     IndexBuffer::unbind();
 
     return Mesh::create(vertexBuffer, bindings, std::move(indexBuffer), GL_TRIANGLES);
+}
+
+Mesh Shape::createTriangle()
+{
+    const float offset = 0.5f;
+    return createTriangle(
+        glm::vec3(-offset, -offset, 0.0f),
+        glm::vec3(offset, -offset, 0.0f),
+        glm::vec3(offset, offset, 0.0f)
+    );
 }
 
 Mesh Shape::createCube()

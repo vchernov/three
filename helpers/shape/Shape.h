@@ -7,6 +7,7 @@
 class Shape
 {
 public:
+    static three::Mesh createTriangle(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2);
     static three::Mesh createTriangle();
 
     static three::Mesh createCube();
