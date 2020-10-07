@@ -76,7 +76,7 @@ void traverse(const gltf::Node& node, const Content& content, Node& target)
     }
 }
 
-std::vector<Scene> ModelLoader::loadModel(const std::string& fn)
+void ModelLoader::loadScene(const std::string& fn, std::vector<Scene>& scenes)
 {
     std::ifstream gltfFile(fn);
     if (!gltfFile.is_open())
@@ -108,8 +108,6 @@ std::vector<Scene> ModelLoader::loadModel(const std::string& fn)
         content.images.push_back(ImageUtils::loadImage(image.uri));
     }
 
-    std::vector<Scene> scenes;
-
     for (const auto& scene : content.document.scenes)
     {
         for (int rootNodeIndex : scene.nodes)
@@ -120,6 +118,4 @@ std::vector<Scene> ModelLoader::loadModel(const std::string& fn)
             scenes.push_back(std::move(scene));
         }
     }
-
-    return scenes;
 }

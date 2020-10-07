@@ -24,13 +24,28 @@ int main(int argc, char** argv)
     controls->setMoveSpeed(0.005f);
     auto wnd = WindowFactory::createWindowWithOrbitCamera("glTF Loading Example", 1024, 768, controls);
 
-    ModelLoader::loadModel(modelFn);
+    std::vector<Scene> scenes;
+
+    try
+    {
+        ModelLoader::loadScene(modelFn, scenes);
+    }
+    catch (FileNotFoundException& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
 
     while (wnd->isRunning())
     {
         wnd->processEvents();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        for (auto& scene : scenes)
+        {
+            scene.draw();
+        }
 
         wnd->swapBuffers();
     }

@@ -8,5 +8,5 @@
 class ModelLoader
 {
 public:
-	static std::vector<Scene> loadModel(const std::string& fn);
+    static void loadScene(const std::string& fn, std::vector<Scene>& scenes);
 };

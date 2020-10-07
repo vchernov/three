@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -49,13 +50,17 @@ void from_json(const json& j, Accessor& accessor);
 
 struct Primitive
 {
-    std::vector<int> indices;
+    std::map<std::string, int> attributes;
+    int indices;
+    int material;
+    unsigned int mode;
 };
 
 void from_json(const json& j, Primitive& primitive);
 
 struct Mesh
 {
+    std::vector<Primitive> primitives;
 };
 
 void from_json(const json& j, Mesh& mesh);

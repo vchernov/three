@@ -36,10 +36,15 @@ void from_json(const json& j, Accessor& accessor)
 
 void from_json(const json& j, Primitive& primitive)
 {
+    j.at("attributes").get_to(primitive.attributes);
+    j.at("indices").get_to(primitive.indices);
+    j.at("material").get_to(primitive.material);
+    j.at("mode").get_to(primitive.mode);
 }
 
 void from_json(const json& j, Mesh& mesh)
 {
+    j.at("primitives").get_to(mesh.primitives);
 }
 
 void from_json(const json& j, Node& node)
